@@ -1,0 +1,4649 @@
+
+    <!DOCTYPE html>
+    <html lang="sq">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistemi i Seteve 2026</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tablesort/5.2.1/tablesort.min.js"></script>
+        <style>
+            body { font-family: -apple-system, sans-serif; margin: 0; background: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; }
+            .content-grow { flex: 1; padding-bottom: 50px; }
+            .header { text-align: center; background: white; padding: 15px; border-bottom: 1px solid #ddd; }
+            .nav-buttons { display: flex; justify-content: center; gap: 8px; padding: 15px; background: #fff; position: sticky; top:0; z-index: 1000; border-bottom: 1px solid #ddd; }
+            .btn-nav { border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; font-size: 13px; }
+            .btn-lib { background: #4b5563; }
+            .btn-conf { background: #10b981; }
+            .btn-view { background: #f59e0b; }
+            .badge { background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
+            
+            .kat-details { background: white; margin: 5px 10px; border-radius: 8px; border: 1px solid #ddd; overflow: hidden; }
+            .kat-details summary { padding: 14px; cursor: pointer; font-weight: bold; background: #fff; }
+            .table-wrap { overflow-x: auto; }
+            table { width: 100%; border-collapse: collapse; }
+            th { background: #f8fafc; padding: 10px; border-bottom: 2px solid #eee; font-size: 11px; text-align: left; }
+            td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+
+            .footer { text-align: center; padding: 20px; font-size: 11px; color: #6b7280; background: #f9fafb; border-top: 1px solid #ddd; }
+
+            #set-calculator-modal {
+                display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background: #111827; color: white; padding: 20px; z-index: 2000; 
+                border-radius: 12px; width: 460px; max-width: 95%; max-height: 85vh; overflow-y: auto;
+            }
+            .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index: 1999; }
+            
+            .calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+            .calc-box label { font-size: 10px; color: #9ca3af; margin-bottom: 4px; display: block; font-weight: bold; text-transform: uppercase; }
+            .calc-box input { background: #374151; color: #fff; border: 1px solid #4b5563; padding: 12px; border-radius: 6px; width: 100%; box-sizing: border-box; font-size: 16px; }
+            .calc-box input[readonly] { background: #1f2937; color: #9ca3af; }
+            .highlight-input { border: 1px solid #f59e0b !important; color: #f59e0b !important; font-weight: bold; }
+
+            #items-list { background: #1f2937; padding: 10px; border-radius: 6px; margin: 10px 0; border: 1px solid #374151; max-height: 180px; overflow-y: auto; }
+            .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #374151; }
+            .item-info { font-size: 12px; flex: 1; color: #e5e7eb; line-height: 1.4; }
+            .btn-remove-item { background: none; border: none; color: #ef4444; font-size: 20px; cursor: pointer; padding-right: 10px; }
+            
+            .btn-final { border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; width: 100%; margin-top: 5px; }
+            .qty-btn { background: #4b5563; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+        </style>
+    </head>
+    <body>
+        <div class="content-grow">
+            <div class="header">
+                <div style="font-size: 11px; font-weight: bold; color: #ef4444; margin-bottom: 4px;">PDF.SHPK</div>
+                <h2 style="margin:0; color:#2563eb;">Menaxhimi i Seteve</h2>
+                <small>Total Artikuj: 213</small>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-nav btn-lib" onclick="toggleLibrary()">📚 LIBRARIA</button>
+                <button class="btn-nav btn-conf" onclick="toggleCalculator()">🛒 KONFIGURATOR SETI<span id="selected-count" class="badge">0</span></button>
+                <button id="toggleViewBtn" class="btn-nav btn-view" onclick="toggleView()">LISTA E ARTIKUJVE</button>
+            </div>
+
+            <div id="librarySection" style="display:none; padding:15px;">
+                <div class="table-wrap" style="background:white; border:1px solid #ddd; border-radius:8px;">
+                    <table>
+                        <thead><tr><th>Emri</th><th>Perberja</th><th>KOT</th><th>SAD</th><th>%</th><th>X</th></tr></thead>
+                        <tbody id="libraryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="groupView">
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 ANTIBAKTERIAL <small>(1 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B5002010</td>
+      <td>Deka Antibakterial 750 ml</td>
+      <td>72%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5002010" id="cb-B5002010" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>270.0</td>
+      <td>74</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 DEZINFEKTUES <small>(3 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B7009010</td>
+      <td>Pastrues WC Deka 750ml Pine</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009010" id="cb-B7009010" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>174.0</td>
+      <td>85</td>
+    </tr>
+    <tr>
+      <td>B7009011</td>
+      <td>Pastrues WC Deka 750ml Orchid</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009011" id="cb-B7009011" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>172.0</td>
+      <td>85</td>
+    </tr>
+    <tr>
+      <td>B7009012</td>
+      <td>Pastrues WC Deka 750ml Ocean</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009012" id="cb-B7009012" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>169.0</td>
+      <td>85</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 DORE <small>(4 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B2001050</td>
+      <td>Elan Family 600 gr</td>
+      <td>68%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2001050" id="cb-B2001050" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>123.0</td>
+      <td>39</td>
+    </tr>
+    <tr>
+      <td>B2002040</td>
+      <td>Deka Aktiv plus 600 gr</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2002040" id="cb-B2002040" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>86.0</td>
+      <td>42</td>
+    </tr>
+    <tr>
+      <td>B2003010</td>
+      <td>Dip Multi Active 600 gr (dore)</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2003010" id="cb-B2003010" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>71.0</td>
+      <td>42</td>
+    </tr>
+    <tr>
+      <td>B2003020</td>
+      <td>Dip Multiaktiv Rifuxho (Dore)</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2003020" id="cb-B2003020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>90.0</td>
+      <td>58</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 ENESH <small>(14 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B6007020</td>
+      <td>Deka Gel Power 770 gr Limon</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007020" id="cb-B6007020" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>193.0</td>
+      <td>84</td>
+    </tr>
+    <tr>
+      <td>B6007013</td>
+      <td>Deka Gel Power 440 ml Jeshil</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007013" id="cb-B6007013" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>105.0</td>
+      <td>46</td>
+    </tr>
+    <tr>
+      <td>B6007022</td>
+      <td>Deka Gel Power 880 ml Kuq</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007022" id="cb-B6007022" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>89</td>
+    </tr>
+    <tr>
+      <td>B6007023</td>
+      <td>Deka Gel Power 880 ml Jeshil</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007023" id="cb-B6007023" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>198.0</td>
+      <td>88</td>
+    </tr>
+    <tr>
+      <td>B6007021</td>
+      <td>Deka Gel Power 880 ml Blu</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007021" id="cb-B6007021" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>197.0</td>
+      <td>88</td>
+    </tr>
+    <tr>
+      <td>B6007011</td>
+      <td>Deka Gel Power 440 ml Blu</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007011" id="cb-B6007011" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>104.0</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <td>B6007012</td>
+      <td>Deka Gel Power 440 ml Kuq</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007012" id="cb-B6007012" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>104.0</td>
+      <td>48</td>
+    </tr>
+    <tr>
+      <td>B6007010</td>
+      <td>Deka Gel Power 480 gr Limon</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007010" id="cb-B6007010" onchange="updateCalculator(this)"></td>
+      <td>0.5</td>
+      <td>120.0</td>
+      <td>56</td>
+    </tr>
+    <tr>
+      <td>B6007024</td>
+      <td>Deka Gel Power Blu 1200ml</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007024" id="cb-B6007024" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>262.0</td>
+      <td>127</td>
+    </tr>
+    <tr>
+      <td>B6007025</td>
+      <td>Deka Gel Power Jeshil 1200ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007025" id="cb-B6007025" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>259.0</td>
+      <td>127</td>
+    </tr>
+    <tr>
+      <td>B6007026</td>
+      <td>Deka Gel Power Kuq 1200 ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007026" id="cb-B6007026" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>259.0</td>
+      <td>127</td>
+    </tr>
+    <tr>
+      <td>B6003115</td>
+      <td>DIX Enesh 2.15 Lit Limon</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6003115" id="cb-B6003115" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>190.0</td>
+      <td>127</td>
+    </tr>
+    <tr>
+      <td>B6003101</td>
+      <td>DIX Enesh 5 Lit</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6003101" id="cb-B6003101" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>435.0</td>
+      <td>295</td>
+    </tr>
+    <tr>
+      <td>B6007030</td>
+      <td>Deka Gel Power 5 Lit</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007030" id="cb-B6007030" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>891.0</td>
+      <td>607</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 KREM <small>(1 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B7001010</td>
+      <td>DIX Cream 700 ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7001010" id="cb-B7001010" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>110.0</td>
+      <td>46</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 LIQUID1 <small>(22 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B1009055</td>
+      <td>Deka Atomik Liquid Black 900ml</td>
+      <td>69%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009055" id="cb-B1009055" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>348.0</td>
+      <td>106</td>
+    </tr>
+    <tr>
+      <td>B1009054</td>
+      <td>Deka Atomik Liquid Color 900ml</td>
+      <td>68%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009054" id="cb-B1009054" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>347.0</td>
+      <td>111</td>
+    </tr>
+    <tr>
+      <td>B1009058</td>
+      <td>Deka Atomik Liquid Black 1300ml</td>
+      <td>67%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009058" id="cb-B1009058" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>448.0</td>
+      <td>148</td>
+    </tr>
+    <tr>
+      <td>B1009056</td>
+      <td>Deka Atomik Liquid White 900ml</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009056" id="cb-B1009056" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>340.0</td>
+      <td>115</td>
+    </tr>
+    <tr>
+      <td>B1009057</td>
+      <td>Deka Atomik Liquid Color 1300ml</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009057" id="cb-B1009057" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>450.0</td>
+      <td>154</td>
+    </tr>
+    <tr>
+      <td>B1009046</td>
+      <td>Deka Atomik Liquid Black 1900ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009046" id="cb-B1009046" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>617.0</td>
+      <td>214</td>
+    </tr>
+    <tr>
+      <td>B1009059</td>
+      <td>Deka Atomik Liquid White 1300ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009059" id="cb-B1009059" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>459.0</td>
+      <td>161</td>
+    </tr>
+    <tr>
+      <td>B1009022</td>
+      <td>Deka Atomik Liquid Black 2700ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009022" id="cb-B1009022" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>823.0</td>
+      <td>291</td>
+    </tr>
+    <tr>
+      <td>B1009045</td>
+      <td>Deka Atomik Liquid Color 1900ml</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009045" id="cb-B1009045" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>616.0</td>
+      <td>223</td>
+    </tr>
+    <tr>
+      <td>B1009021</td>
+      <td>Deka Atomik Liquid Color 2700ml</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009021" id="cb-B1009021" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>818.0</td>
+      <td>304</td>
+    </tr>
+    <tr>
+      <td>B1009047</td>
+      <td>Deka Atomik Liquid White 1900ml</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009047" id="cb-B1009047" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>628.0</td>
+      <td>233</td>
+    </tr>
+    <tr>
+      <td>B1009043</td>
+      <td>Deka Atomic Liquid 1.8 lit Color</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009043" id="cb-B1009043" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>592.0</td>
+      <td>227</td>
+    </tr>
+    <tr>
+      <td>B1009023</td>
+      <td>Deka Atomik Liquid White 2700ml</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009023" id="cb-B1009023" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>813.0</td>
+      <td>318</td>
+    </tr>
+    <tr>
+      <td>B1009051</td>
+      <td>Deka Liquid 1.32 Lit White</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009051" id="cb-B1009051" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>420.0</td>
+      <td>171</td>
+    </tr>
+    <tr>
+      <td>B1009052</td>
+      <td>Deka Liquid 1.32 Lit Black</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009052" id="cb-B1009052" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>356.0</td>
+      <td>158</td>
+    </tr>
+    <tr>
+      <td>B1009041</td>
+      <td>Deka Liquid 1.8 Lit Black</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009041" id="cb-B1009041" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>452.0</td>
+      <td>208</td>
+    </tr>
+    <tr>
+      <td>B1009050</td>
+      <td>Deka Liquid 1.32 Lit Color</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009050" id="cb-B1009050" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>351.0</td>
+      <td>163</td>
+    </tr>
+    <tr>
+      <td>B1009040</td>
+      <td>Deka Liquid 1.8 Lit Color</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009040" id="cb-B1009040" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>453.0</td>
+      <td>218</td>
+    </tr>
+    <tr>
+      <td>B1009042</td>
+      <td>Deka Liquid 1.8 Lit White</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009042" id="cb-B1009042" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>458.0</td>
+      <td>226</td>
+    </tr>
+    <tr>
+      <td>B1009032</td>
+      <td>Deka Liquid 5 Lit White</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009032" id="cb-B1009032" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1075.0</td>
+      <td>636</td>
+    </tr>
+    <tr>
+      <td>B1009030</td>
+      <td>Deka Liquid 5 Lit Color</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009030" id="cb-B1009030" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1094.0</td>
+      <td>660</td>
+    </tr>
+    <tr>
+      <td>B1009031</td>
+      <td>Deka Liquid 5 Lit Black</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009031" id="cb-B1009031" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1087.0</td>
+      <td>660</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 LIQUID2 <small>(3 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B1009061</td>
+      <td>Dip Liquid 1.8 Lit Black</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009061" id="cb-B1009061" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>341.0</td>
+      <td>148</td>
+    </tr>
+    <tr>
+      <td>B1009060</td>
+      <td>DIP Liquid 1.8 Lit Color</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009060" id="cb-B1009060" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>355.0</td>
+      <td>164</td>
+    </tr>
+    <tr>
+      <td>B1009070</td>
+      <td>DIP Liquid 1.32 Lit Color</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009070" id="cb-B1009070" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>253.0</td>
+      <td>128</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 MATIK1 <small>(44 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B1008028</td>
+      <td>Deka No Comment 1.54 Kg Color</td>
+      <td>69%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008028" id="cb-B1008028" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>506.0</td>
+      <td>157</td>
+    </tr>
+    <tr>
+      <td>B1008027</td>
+      <td>Deka No Comment 1.54 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008027" id="cb-B1008027" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>501.0</td>
+      <td>168</td>
+    </tr>
+    <tr>
+      <td>B1008024</td>
+      <td>Deka No Comment 1.7 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008024" id="cb-B1008024" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>550.0</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>B1008030</td>
+      <td>Deka NO Comment 2.31 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008030" id="cb-B1008030" onchange="updateCalculator(this)"></td>
+      <td>2.3</td>
+      <td>742.0</td>
+      <td>253</td>
+    </tr>
+    <tr>
+      <td>B1008092</td>
+      <td>Deka No Comment 1.75 kg Color (D)</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008092" id="cb-B1008092" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>528.0</td>
+      <td>180</td>
+    </tr>
+    <tr>
+      <td>B1008019</td>
+      <td>Deka No Comment 2.6 Kg Color</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008019" id="cb-B1008019" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>747.0</td>
+      <td>265</td>
+    </tr>
+    <tr>
+      <td>B1008026</td>
+      <td>Deka No Comment 1.54 Kg Blu</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008026" id="cb-B1008026" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>503.0</td>
+      <td>179</td>
+    </tr>
+    <tr>
+      <td>B1008025</td>
+      <td>Deka No Comment 1.7 Kg Color</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008025" id="cb-B1008025" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>484.0</td>
+      <td>175</td>
+    </tr>
+    <tr>
+      <td>B1008029</td>
+      <td>Deka No Comment 2.31 Kg Blu</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008029" id="cb-B1008029" onchange="updateCalculator(this)"></td>
+      <td>2.3</td>
+      <td>738.0</td>
+      <td>270</td>
+    </tr>
+    <tr>
+      <td>B1008017</td>
+      <td>Deka No Comment 2.6 Kg Blu</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008017" id="cb-B1008017" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>800.0</td>
+      <td>304</td>
+    </tr>
+    <tr>
+      <td>B1008018</td>
+      <td>Deka No Comment 2.6 Kg Jeshil</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008018" id="cb-B1008018" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>740.0</td>
+      <td>283</td>
+    </tr>
+    <tr>
+      <td>B1008091</td>
+      <td>Deka No Comment 1.75 Kg Blu (D)</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008091" id="cb-B1008091" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>524.0</td>
+      <td>206</td>
+    </tr>
+    <tr>
+      <td>B1008051</td>
+      <td>Deka No Comment 700 gr Color</td>
+      <td>60%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008051" id="cb-B1008051" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>182.0</td>
+      <td>72</td>
+    </tr>
+    <tr>
+      <td>B1008022</td>
+      <td>Deka No Comment 2 kg Violet</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008022" id="cb-B1008022" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>550.0</td>
+      <td>226</td>
+    </tr>
+    <tr>
+      <td>B1008023</td>
+      <td>Deka No Comment 1.7 Kg Blu</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008023" id="cb-B1008023" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>480.0</td>
+      <td>200</td>
+    </tr>
+    <tr>
+      <td>B1008054</td>
+      <td>Deka No Comment 7.7kg Blu</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008054" id="cb-B1008054" onchange="updateCalculator(this)"></td>
+      <td>7.7</td>
+      <td>1860.0</td>
+      <td>790</td>
+    </tr>
+    <tr>
+      <td>B1008020</td>
+      <td>Deka No Comment 2 kg Jeshil</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008020" id="cb-B1008020" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>513.0</td>
+      <td>218</td>
+    </tr>
+    <tr>
+      <td>B1008014</td>
+      <td>Deka No Comment 3 kg Jeshil</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008014" id="cb-B1008014" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>750.0</td>
+      <td>323</td>
+    </tr>
+    <tr>
+      <td>B1003050</td>
+      <td>Deka Elegant Sensitive 3 kg (karton)</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003050" id="cb-B1003050" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>734.0</td>
+      <td>317</td>
+    </tr>
+    <tr>
+      <td>B1008016</td>
+      <td>Deka No Comment 3 kg Violet</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008016" id="cb-B1008016" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>765.0</td>
+      <td>332</td>
+    </tr>
+    <tr>
+      <td>B1008071</td>
+      <td>Deka Atomic Green 1.8 Kg</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008071" id="cb-B1008071" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>519.0</td>
+      <td>227</td>
+    </tr>
+    <tr>
+      <td>B1008053</td>
+      <td>Deka No Comment 6.16 kg Blu</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008053" id="cb-B1008053" onchange="updateCalculator(this)"></td>
+      <td>6.2</td>
+      <td>1636.0</td>
+      <td>720</td>
+    </tr>
+    <tr>
+      <td>B1008064</td>
+      <td>Deka No Comment 4 kg Jeshil</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008064" id="cb-B1008064" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>980.0</td>
+      <td>432</td>
+    </tr>
+    <tr>
+      <td>B1008070</td>
+      <td>Deka Atomic Blu 1.8 Kg</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008070" id="cb-B1008070" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>523.0</td>
+      <td>231</td>
+    </tr>
+    <tr>
+      <td>B1008052</td>
+      <td>Deka No Comment 700 Gr Blu</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008052" id="cb-B1008052" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>185.0</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <td>B1008074</td>
+      <td>Deka Atomic Green 2.6 Kg</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008074" id="cb-B1008074" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>725.0</td>
+      <td>327</td>
+    </tr>
+    <tr>
+      <td>B1008078</td>
+      <td>Deka Atomic Green 3.6 Kg</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008078" id="cb-B1008078" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>978.0</td>
+      <td>453</td>
+    </tr>
+    <tr>
+      <td>B1008015</td>
+      <td>Deka No Comment 3 kg Blu</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008015" id="cb-B1008015" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>738.0</td>
+      <td>347</td>
+    </tr>
+    <tr>
+      <td>B1008073</td>
+      <td>Deka Atomic Blu 2.6 Kg</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008073" id="cb-B1008073" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>730.0</td>
+      <td>343</td>
+    </tr>
+    <tr>
+      <td>B1008086</td>
+      <td>Detergent pluhur Super Clean White 1.61 ( 22 larje )</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008086" id="cb-B1008086" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>309.0</td>
+      <td>146</td>
+    </tr>
+    <tr>
+      <td>B1008087</td>
+      <td>Detergent pluhur Super Clean Color 1.61kg (22 Larje)</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008087" id="cb-B1008087" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>290.0</td>
+      <td>139</td>
+    </tr>
+    <tr>
+      <td>B1008077</td>
+      <td>Deka Atomic Blu 3.6 Kg</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008077" id="cb-B1008077" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>978.0</td>
+      <td>476</td>
+    </tr>
+    <tr>
+      <td>B1008021</td>
+      <td>Deka No Comment 2 kg Blu</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008021" id="cb-B1008021" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>470.0</td>
+      <td>233</td>
+    </tr>
+    <tr>
+      <td>B1008089</td>
+      <td>Super Clean Spar Color 3.22kg - 44 Larje</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008089" id="cb-B1008089" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>546.0</td>
+      <td>277</td>
+    </tr>
+    <tr>
+      <td>B1008088</td>
+      <td>Super Clean Spar White 3.22kg - 44 Larje</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008088" id="cb-B1008088" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>548.0</td>
+      <td>291</td>
+    </tr>
+    <tr>
+      <td>B1008085</td>
+      <td>Deka Infinit 50 Larje</td>
+      <td>45%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008085" id="cb-B1008085" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>770.0</td>
+      <td>421</td>
+    </tr>
+    <tr>
+      <td>B1008084</td>
+      <td>Deka Infinit 75 Larje (3.9)</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008084" id="cb-B1008084" onchange="updateCalculator(this)"></td>
+      <td>3.9</td>
+      <td>1113.0</td>
+      <td>627</td>
+    </tr>
+    <tr>
+      <td>B1008083</td>
+      <td>Deka Infinit 5.8 Kg</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008083" id="cb-B1008083" onchange="updateCalculator(this)"></td>
+      <td>5.8</td>
+      <td>1562.0</td>
+      <td>880</td>
+    </tr>
+    <tr>
+      <td>B1008081</td>
+      <td>Deka Infinit 75 larje</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008081" id="cb-B1008081" onchange="updateCalculator(this)"></td>
+      <td>4.3</td>
+      <td>1115.0</td>
+      <td>650</td>
+    </tr>
+    <tr>
+      <td>B1008080</td>
+      <td>Deka Infinit 110 larje</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008080" id="cb-B1008080" onchange="updateCalculator(this)"></td>
+      <td>6.3</td>
+      <td>1510.0</td>
+      <td>925</td>
+    </tr>
+    <tr>
+      <td>B1008068</td>
+      <td>Deka Infinit 56 larje ()</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008068" id="cb-B1008068" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>690.0</td>
+      <td>522</td>
+    </tr>
+    <tr>
+      <td>B1003130</td>
+      <td>Deka No Comment Rifuxho</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003130" id="cb-B1003130" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>197.0</td>
+      <td>149</td>
+    </tr>
+    <tr>
+      <td>B1003140</td>
+      <td>Deka Infinit Rifuxho</td>
+      <td>19%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003140" id="cb-B1003140" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>218.0</td>
+      <td>176</td>
+    </tr>
+    <tr>
+      <td>B1008063</td>
+      <td>Deka No Comment 4 kg Blu</td>
+      <td>0%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008063" id="cb-B1008063" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>463</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 MATIK2 <small>(10 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B1007012</td>
+      <td>DIP Pluhur 3 kg Color</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007012" id="cb-B1007012" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>355.0</td>
+      <td>207</td>
+    </tr>
+    <tr>
+      <td>B1007011</td>
+      <td>DIP Pluhur 3 kg Jeshil</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007011" id="cb-B1007011" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>357.0</td>
+      <td>219</td>
+    </tr>
+    <tr>
+      <td>B1007010</td>
+      <td>DIP Pluhur 3 kg Blu</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007010" id="cb-B1007010" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>354.0</td>
+      <td>224</td>
+    </tr>
+    <tr>
+      <td>B1007031</td>
+      <td>Dip Pluhur 8.6 Kg Color</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007031" id="cb-B1007031" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>909.0</td>
+      <td>593</td>
+    </tr>
+    <tr>
+      <td>B1007015</td>
+      <td>Dip Pluhur 6 Kg Color</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007015" id="cb-B1007015" onchange="updateCalculator(this)"></td>
+      <td>6.0</td>
+      <td>624.0</td>
+      <td>416</td>
+    </tr>
+    <tr>
+      <td>B1007030</td>
+      <td>Dip Pluhur 8.6 Kg Blu</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007030" id="cb-B1007030" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>904.0</td>
+      <td>638</td>
+    </tr>
+    <tr>
+      <td>B1007016</td>
+      <td>DIP Pluhur 6 kg Blu</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007016" id="cb-B1007016" onchange="updateCalculator(this)"></td>
+      <td>6.0</td>
+      <td>634.0</td>
+      <td>448</td>
+    </tr>
+    <tr>
+      <td>B1007072</td>
+      <td>Elan Expert 1.5 kg Jeshil</td>
+      <td>13%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007072" id="cb-B1007072" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>124.0</td>
+      <td>108</td>
+    </tr>
+    <tr>
+      <td>B1007071</td>
+      <td>Elan Expert 1.5 kg Blu</td>
+      <td>13%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007071" id="cb-B1007071" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>124.0</td>
+      <td>108</td>
+    </tr>
+    <tr>
+      <td>B1007020</td>
+      <td>Dip Pluhur  Rifuxho (Lavatrice)</td>
+      <td>-8%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007020" id="cb-B1007020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>100.0</td>
+      <td>108</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 PLLAKA <small>(7 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B7005093</td>
+      <td>Sprink  Pllakash 5Lit</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005093" id="cb-B7005093" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>539.0</td>
+      <td>253</td>
+    </tr>
+    <tr>
+      <td>B7005314</td>
+      <td>Dix Pllakash 2.15 Lit Trendafil</td>
+      <td>48%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005314" id="cb-B7005314" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>190.0</td>
+      <td>98</td>
+    </tr>
+    <tr>
+      <td>B7005212</td>
+      <td>DIP Pllakash 1 Lit Lejla (Touch of Lavender)</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005212" id="cb-B7005212" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>73</td>
+    </tr>
+    <tr>
+      <td>B7005213</td>
+      <td>DIP Pllakash 1 Lit Roze (Think Pink)</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005213" id="cb-B7005213" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>75</td>
+    </tr>
+    <tr>
+      <td>B7005211</td>
+      <td>DIP Pllakash 1 Lit Blu (Crystal Lagoon)</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005211" id="cb-B7005211" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>120.0</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <td>B7005214</td>
+      <td>DIP Pllakash 1 Lit Kuqe (Elegant Flowers)</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005214" id="cb-B7005214" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>120.0</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <td>B7005210</td>
+      <td>DIP Pllakash 1 Lit Jeshil (Blooming Lilies)</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005210" id="cb-B7005210" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>118.0</td>
+      <td>79</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 SAPUN <small>(5 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B7008016</td>
+      <td>Dip Liquid Sapun Flowers Love 1000 ml</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008016" id="cb-B7008016" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>122.0</td>
+      <td>75</td>
+    </tr>
+    <tr>
+      <td>B7008014</td>
+      <td>Dip Liquid Sapun Argan Dream 1000 ml</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008014" id="cb-B7008014" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>121.0</td>
+      <td>79</td>
+    </tr>
+    <tr>
+      <td>B7008015</td>
+      <td>Dip Liquid Sapun Tea Tree Pure 1000ml</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008015" id="cb-B7008015" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>78</td>
+    </tr>
+    <tr>
+      <td>B7008010</td>
+      <td>DIX Sapun 2.65 Lit Roze</td>
+      <td>30%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008010" id="cb-B7008010" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>267.0</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>B7005095</td>
+      <td>Deka Sapun Liquid 5 Lit</td>
+      <td>27%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005095" id="cb-B7005095" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>384.0</td>
+      <td>281</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 SET <small>(66 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B0001149</td>
+      <td>SET Deka Antibakterial 750 ml + Deka Gel Power 480 gr</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001149" id="cb-B0001149" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>363.0</td>
+      <td>131</td>
+    </tr>
+    <tr>
+      <td>B0001243</td>
+      <td>Set Deka Atomic Liquid 40(L)+ Deka Atomic Liquid 20(L)+Wellnax WC 50g</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001243" id="cb-B0001243" onchange="updateCalculator(this)"></td>
+      <td>2.8</td>
+      <td>951.0</td>
+      <td>373</td>
+    </tr>
+    <tr>
+      <td>B0001235</td>
+      <td>Set Deka Atomik Liquid (0.9Lx3)</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001235" id="cb-B0001235" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>845.0</td>
+      <td>332</td>
+    </tr>
+    <tr>
+      <td>B0001241</td>
+      <td>Set Deka Atomic Liquid 40(L)+Deka Atomic Liquid 20(L)</td>
+      <td>60%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001241" id="cb-B0001241" onchange="updateCalculator(this)"></td>
+      <td>2.8</td>
+      <td>830.0</td>
+      <td>334</td>
+    </tr>
+    <tr>
+      <td>B0001236</td>
+      <td>Set D.No Comment 1.54+D.Liquid 20Larje+P.Soft 920ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001236" id="cb-B0001236" onchange="updateCalculator(this)"></td>
+      <td>3.4</td>
+      <td>968.0</td>
+      <td>393</td>
+    </tr>
+    <tr>
+      <td>B0001226</td>
+      <td>Set Deka No Comment 1.54 Kg + Deka Liquid 1.32 Lit + Prim Soft 920 ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001226" id="cb-B0001226" onchange="updateCalculator(this)"></td>
+      <td>3.8</td>
+      <td>1080.0</td>
+      <td>445</td>
+    </tr>
+    <tr>
+      <td>B0001213</td>
+      <td>Set Deka No Comment 1.54 Kg+Deka Zbardhues 1 Lit+Deka Gel Power 440 ml</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001213" id="cb-B0001213" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>660.0</td>
+      <td>274</td>
+    </tr>
+    <tr>
+      <td>B0001251</td>
+      <td>Set Deka Liquid Atomic 40 (Larje) + Wellnax WC</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001251" id="cb-B0001251" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>630.0</td>
+      <td>262</td>
+    </tr>
+    <tr>
+      <td>B0001237</td>
+      <td>Set 2 D. Atomic Liquid (29Larje)+D. Atomic Liquid (20 Larje)</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001237" id="cb-B0001237" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>990.0</td>
+      <td>420</td>
+    </tr>
+    <tr>
+      <td>B0001252</td>
+      <td>Set Deka Liquid Atomic 60 (Larje) + Deka Liquid Atomic 20 (Larje)</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001252" id="cb-B0001252" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>985.0</td>
+      <td>419</td>
+    </tr>
+    <tr>
+      <td>B0001168</td>
+      <td>Set Prim Soft 1840 ml + Deka liquid 1.32 Lit Black</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001168" id="cb-B0001168" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>770.0</td>
+      <td>333</td>
+    </tr>
+    <tr>
+      <td>B0001286</td>
+      <td>Set Deka NoComment 33 larje + Prim Soft 40 Larje</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001286" id="cb-B0001286" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>830.0</td>
+      <td>372</td>
+    </tr>
+    <tr>
+      <td>B0001231</td>
+      <td>Set 2xDeka liquid 22 Larje+Prim Soft 1780 ml</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001231" id="cb-B0001231" onchange="updateCalculator(this)"></td>
+      <td>4.4</td>
+      <td>1081.0</td>
+      <td>489</td>
+    </tr>
+    <tr>
+      <td>B0001249</td>
+      <td>Set Deka No Comment 7.7kg + Deka Liquid Atomic 20 Larje</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001249" id="cb-B0001249" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>1975.0</td>
+      <td>905</td>
+    </tr>
+    <tr>
+      <td>B0001261</td>
+      <td>Set Prim Luxurious 1.65L+Deka Liquid 900ml (20L)</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001261" id="cb-B0001261" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>620.0</td>
+      <td>291</td>
+    </tr>
+    <tr>
+      <td>B0001204</td>
+      <td>Set Deka Atomik 1.8 Kg +Deka Gel Power 440 ml</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001204" id="cb-B0001204" onchange="updateCalculator(this)"></td>
+      <td>2.2</td>
+      <td>593.0</td>
+      <td>279</td>
+    </tr>
+    <tr>
+      <td>B0001250</td>
+      <td>Set 2xDeka Gel Power 880ml + Sfungjer Enesh Macromax</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001250" id="cb-B0001250" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>381.0</td>
+      <td>181</td>
+    </tr>
+    <tr>
+      <td>B0001248</td>
+      <td>Deka Gel Power 1200ml+Sfungjer Enesh Macromax</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001248" id="cb-B0001248" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>315.0</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <td>B0001253</td>
+      <td>Set Deka No Comment 6.16 kg + Wellnax WC</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001253" id="cb-B0001253" onchange="updateCalculator(this)"></td>
+      <td>6.2</td>
+      <td>1594.0</td>
+      <td>759</td>
+    </tr>
+    <tr>
+      <td>B0001287</td>
+      <td>Set Deka No Comment 22 Larje + Prim Soft 40 Larje</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001287" id="cb-B0001287" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>580.0</td>
+      <td>282</td>
+    </tr>
+    <tr>
+      <td>B0001184</td>
+      <td>Set Deka Atomik 2.6 kg + Deka Gel Power 880 ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001184" id="cb-B0001184" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>880.0</td>
+      <td>432</td>
+    </tr>
+    <tr>
+      <td>B0001050</td>
+      <td>SET Deka No Comment 3 kg Blu + Deka Liquid 1.32 Lit Color</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001050" id="cb-B0001050" onchange="updateCalculator(this)"></td>
+      <td>4.3</td>
+      <td>1038.0</td>
+      <td>509</td>
+    </tr>
+    <tr>
+      <td>B0001181</td>
+      <td>Set 2 Deka Liquid 1.32 Lit + Dip Liquid 1.8Lit</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001181" id="cb-B0001181" onchange="updateCalculator(this)"></td>
+      <td>4.4</td>
+      <td>950.0</td>
+      <td>473</td>
+    </tr>
+    <tr>
+      <td>B0001233</td>
+      <td>Set Prim Luxurious 1.65+Deka Liquid 1.32</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001233" id="cb-B0001233" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>684.0</td>
+      <td>343</td>
+    </tr>
+    <tr>
+      <td>B0001285</td>
+      <td>Set Deka Gel Power 880ml 1+1</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001285" id="cb-B0001285" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>350.0</td>
+      <td>177</td>
+    </tr>
+    <tr>
+      <td>B0001240</td>
+      <td>Set Deka No Comment 2.6kg +Prim Luxurios  75 Larje</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001240" id="cb-B0001240" onchange="updateCalculator(this)"></td>
+      <td>4.2</td>
+      <td>957.0</td>
+      <td>484</td>
+    </tr>
+    <tr>
+      <td>B0001245</td>
+      <td>Set Deka No Comment 33(L) + Prim Luxururious (75L)</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001245" id="cb-B0001245" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>890.0</td>
+      <td>451</td>
+    </tr>
+    <tr>
+      <td>B0001219</td>
+      <td>Set infinit 75+ P. Luxurious 1.65 + Gel power 880</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001219" id="cb-B0001219" onchange="updateCalculator(this)"></td>
+      <td>6.8</td>
+      <td>1805.0</td>
+      <td>919</td>
+    </tr>
+    <tr>
+      <td>B0001210</td>
+      <td>Set Deka No Comment 1.7 Kg + Deka Gel Power 440 ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001210" id="cb-B0001210" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>470.0</td>
+      <td>248</td>
+    </tr>
+    <tr>
+      <td>B0001246</td>
+      <td>Set 2 Deka Gel Power 440ml+ Sfungjer Enesh Macromax</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001246" id="cb-B0001246" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>188.0</td>
+      <td>99</td>
+    </tr>
+    <tr>
+      <td>B0001247</td>
+      <td>Set 2X Deka Gel Power 880ml+Tel me Doreze Macromax</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001247" id="cb-B0001247" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>410.0</td>
+      <td>217</td>
+    </tr>
+    <tr>
+      <td>B0001225</td>
+      <td>Set Deka Atormic 22 Larje + Deka Liquid 1.32 + Deka Gel Power 880 Ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001225" id="cb-B0001225" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>910.0</td>
+      <td>482</td>
+    </tr>
+    <tr>
+      <td>B0001234</td>
+      <td>Set Deka Infinit 50 Larje+P.Soft 920ml+D.Gel Power 440ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001234" id="cb-B0001234" onchange="updateCalculator(this)"></td>
+      <td>4.1</td>
+      <td>1070.0</td>
+      <td>571</td>
+    </tr>
+    <tr>
+      <td>B0001220</td>
+      <td>Set Deka Infinit 3.9 kg + Prim Soft 1780 Ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001220" id="cb-B0001220" onchange="updateCalculator(this)"></td>
+      <td>7.1</td>
+      <td>1656.0</td>
+      <td>885</td>
+    </tr>
+    <tr>
+      <td>B0001239</td>
+      <td>Set D.Infinit 110 Larje+D.Atomic Liq Color 20 Larje+D.Atomic Liq Black 20 Larje</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001239" id="cb-B0001239" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>2050.0</td>
+      <td>1097</td>
+    </tr>
+    <tr>
+      <td>B0001183</td>
+      <td>Set Deka Atomic 1.8 Kg +Deka Liquid 1.32 Lit</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001183" id="cb-B0001183" onchange="updateCalculator(this)"></td>
+      <td>3.1</td>
+      <td>707.0</td>
+      <td>394</td>
+    </tr>
+    <tr>
+      <td>B0001257</td>
+      <td>Set Macromax Celefon 100m+Qese Pjekje+Leter Pjekje+Qese Frigoriferi+Qese Perimesh +Vaj Olim 1L</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001257" id="cb-B0001257" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>939.0</td>
+      <td>525</td>
+    </tr>
+    <tr>
+      <td>B0001222</td>
+      <td>Set Deka Infinit 110 Larje+Deka liquid 22 Larje+Deka G.Power 440ml</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001222" id="cb-B0001222" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1940.0</td>
+      <td>1090</td>
+    </tr>
+    <tr>
+      <td>B0001224</td>
+      <td>Set Deka Infinit 5.8 kg + Prim Soft 1780 ml +Deka Zbardhues 1 Lit + Deka Gel Power 440 Ml</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001224" id="cb-B0001224" onchange="updateCalculator(this)"></td>
+      <td>9.0</td>
+      <td>2026.0</td>
+      <td>1139</td>
+    </tr>
+    <tr>
+      <td>B0001268</td>
+      <td>Set Prim Soft 1.78+Prim Soft 0.92Lit</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001268" id="cb-B0001268" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>470.0</td>
+      <td>266</td>
+    </tr>
+    <tr>
+      <td>B0001209</td>
+      <td>Set Deka Infinit 75 Larje +Prim Soft 1840 ml+Deka zbardhues 1 lit + Deka Gel Power 440 ml</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001209" id="cb-B0001209" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1623.0</td>
+      <td>920</td>
+    </tr>
+    <tr>
+      <td>B0001230</td>
+      <td>Set Deka Infinit110 larje +Deka Liquid Black 1.32+ P.Soft 1780ml</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001230" id="cb-B0001230" onchange="updateCalculator(this)"></td>
+      <td>8.9</td>
+      <td>2100.0</td>
+      <td>1202</td>
+    </tr>
+    <tr>
+      <td>B0001284</td>
+      <td>Set Deka Infinit 110 Larje +D.Atomic Liquid 20Larje +P.Soft 40Larje</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001284" id="cb-B0001284" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1902.0</td>
+      <td>1093</td>
+    </tr>
+    <tr>
+      <td>B0001178</td>
+      <td>Set Deka Liquid 1.32 lt x 3</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001178" id="cb-B0001178" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>855.0</td>
+      <td>492</td>
+    </tr>
+    <tr>
+      <td>B0001262</td>
+      <td>Set Deka Gel Power 880ml + Deka Gel Power 440 ml</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001262" id="cb-B0001262" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>235.0</td>
+      <td>136</td>
+    </tr>
+    <tr>
+      <td>B0001207</td>
+      <td>Set Deka Infinit 110 Larje +Prim Soft 1840 ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml ()</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001207" id="cb-B0001207" onchange="updateCalculator(this)"></td>
+      <td>9.6</td>
+      <td>2041.0</td>
+      <td>1195</td>
+    </tr>
+    <tr>
+      <td>B0001216</td>
+      <td>Set Deka Infinit 5.8 kg +Prim Soft 1840 ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001216" id="cb-B0001216" onchange="updateCalculator(this)"></td>
+      <td>9.1</td>
+      <td>1963.0</td>
+      <td>1150</td>
+    </tr>
+    <tr>
+      <td>B0001221</td>
+      <td>Set Deka Infinit 75 larje+Prim soft 80 larje+Deka Zbardhues 1L</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001221" id="cb-B0001221" onchange="updateCalculator(this)"></td>
+      <td>6.7</td>
+      <td>1418.0</td>
+      <td>838</td>
+    </tr>
+    <tr>
+      <td>B0001206</td>
+      <td>Set Deka Infinit 56 Larje + Prim Soft 920 Ml + Deka Gel Power 440 ml</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001206" id="cb-B0001206" onchange="updateCalculator(this)"></td>
+      <td>4.6</td>
+      <td>1058.0</td>
+      <td>636</td>
+    </tr>
+    <tr>
+      <td>B0001167</td>
+      <td>Set Deka Infinit 75 larje + Prim soft 1840\r\n ml + Deka Zbardhues 1 L + Deka Gel Power 770 gr ()</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001167" id="cb-B0001167" onchange="updateCalculator(this)"></td>
+      <td>8.2</td>
+      <td>1647.0</td>
+      <td>994</td>
+    </tr>
+    <tr>
+      <td>B0001169</td>
+      <td>Set Prim Soft 1840 ml + Prim Soft 1840 ml</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001169" id="cb-B0001169" onchange="updateCalculator(this)"></td>
+      <td>3.7</td>
+      <td>581.0</td>
+      <td>351</td>
+    </tr>
+    <tr>
+      <td>B0001229</td>
+      <td>Set Deka Infrinit 50 Larje+ Deka Liquid 1.32 Lit +Deka Gel Power 880 ml</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001229" id="cb-B0001229" onchange="updateCalculator(this)"></td>
+      <td>4.9</td>
+      <td>1100.0</td>
+      <td>672</td>
+    </tr>
+    <tr>
+      <td>B0001223</td>
+      <td>Set Prim Soft 80 Larje + Prim Soft 80 Larje</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001223" id="cb-B0001223" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>546.0</td>
+      <td>340</td>
+    </tr>
+    <tr>
+      <td>B0001175</td>
+      <td>Set Deka Infinit 56 Larje + Deka Gel Power 770ml + Prim Soft 920ml</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001175" id="cb-B0001175" onchange="updateCalculator(this)"></td>
+      <td>5.2</td>
+      <td>1123.0</td>
+      <td>708</td>
+    </tr>
+    <tr>
+      <td>B0001267</td>
+      <td>Set Prim Luxurious 1.65+Prim Luxurious 1.65</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001267" id="cb-B0001267" onchange="updateCalculator(this)"></td>
+      <td>3.3</td>
+      <td>580.0</td>
+      <td>372</td>
+    </tr>
+    <tr>
+      <td>B0001180</td>
+      <td>Set Deka Infinit 110 Larje +Prim Soft 1840 ml +Deka Zbardhues 1 Lit + Deka Gel Power 770 ml ()</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001180" id="cb-B0001180" onchange="updateCalculator(this)"></td>
+      <td>10.4</td>
+      <td>2009.0</td>
+      <td>1299</td>
+    </tr>
+    <tr>
+      <td>B0001244</td>
+      <td>Set Deka Infinit 50 Larje +Deka Atomic Liquid 0.9L (20Larje)</td>
+      <td>34%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001244" id="cb-B0001244" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>805.0</td>
+      <td>532</td>
+    </tr>
+    <tr>
+      <td>B0001096</td>
+      <td>SET Dip Pluhur 3 kg Blu + Dip Soft 2 Lit Blu</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001096" id="cb-B0001096" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>534.0</td>
+      <td>358</td>
+    </tr>
+    <tr>
+      <td>B0001275</td>
+      <td>Set Pistake te Kripura 150gr+Miser me Spec 75 gr</td>
+      <td>31%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001275" id="cb-B0001275" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>487.0</td>
+      <td>337</td>
+    </tr>
+    <tr>
+      <td>B0001272</td>
+      <td>Set Wellnax Wc 4*50gr+Wellnax Wc 4*50gr</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001272" id="cb-B0001272" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>360.0</td>
+      <td>256</td>
+    </tr>
+    <tr>
+      <td>B0001270</td>
+      <td>Set Dip Pluhur 8.6kg+Dip Soft 2Lt</td>
+      <td>28%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001270" id="cb-B0001270" onchange="updateCalculator(this)"></td>
+      <td>10.6</td>
+      <td>1009.0</td>
+      <td>726</td>
+    </tr>
+    <tr>
+      <td>B0001276</td>
+      <td>Set Pistake me Spec 100gr+Fruta te Thata Miks i Embel 150gr</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001276" id="cb-B0001276" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>481.0</td>
+      <td>367</td>
+    </tr>
+    <tr>
+      <td>B0001269</td>
+      <td>Set Deka No Comment 6.16+Prim Soft 0.92Lt</td>
+      <td>23%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001269" id="cb-B0001269" onchange="updateCalculator(this)"></td>
+      <td>7.1</td>
+      <td>1074.0</td>
+      <td>822</td>
+    </tr>
+    <tr>
+      <td>B0001273</td>
+      <td>Set Macromax Alumin 10m+Leter Pjekje 10cp</td>
+      <td>12%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001273" id="cb-B0001273" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>170.0</td>
+      <td>150</td>
+    </tr>
+    <tr>
+      <td>B0001254</td>
+      <td>Deka Atomic 1.8kg(21)+D.Zbardhues 1L+Dip Pllakash 1L+Peceta(5cp)+Kove me Shtupe Macromax</td>
+      <td>-3%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001254" id="cb-B0001254" onchange="updateCalculator(this)"></td>
+      <td>3.8</td>
+      <td>760.0</td>
+      <td>779</td>
+    </tr>
+    <tr>
+      <td>B0001238</td>
+      <td>Set D.Infinit 75 Larje+D.Atomic Liq.Color 20 Larje+D.Atomic Liq.Black 20Larje</td>
+      <td>-7%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001238" id="cb-B0001238" onchange="updateCalculator(this)"></td>
+      <td>5.7</td>
+      <td>789.0</td>
+      <td>844</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 SOFT1 <small>(19 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B4001030</td>
+      <td>Prim Soft 1840 ml (Blu)</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4001030" id="cb-B4001030" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>330.0</td>
+      <td>157</td>
+    </tr>
+    <tr>
+      <td>B4008011</td>
+      <td>Prim Soft 1840 ml Roze</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008011" id="cb-B4008011" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>381.0</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>B4001020</td>
+      <td>Prim Soft 1 Lit Blu</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4001020" id="cb-B4001020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>190.0</td>
+      <td>94</td>
+    </tr>
+    <tr>
+      <td>B4008023</td>
+      <td>Prim Soft 920 ml Verdhe</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008023" id="cb-B4008023" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>205.0</td>
+      <td>104</td>
+    </tr>
+    <tr>
+      <td>B4008020</td>
+      <td>Prim Soft 920 ml Blu</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008020" id="cb-B4008020" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>102</td>
+    </tr>
+    <tr>
+      <td>B4008012</td>
+      <td>Prim soft 1840 Bardhe</td>
+      <td>48%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008012" id="cb-B4008012" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>352.0</td>
+      <td>183</td>
+    </tr>
+    <tr>
+      <td>B4008017</td>
+      <td>Prim Soft 1780 Verdhe</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008017" id="cb-B4008017" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>313.0</td>
+      <td>165</td>
+    </tr>
+    <tr>
+      <td>B4008014</td>
+      <td>Prim Soft 1780 ml Blu</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008014" id="cb-B4008014" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>164</td>
+    </tr>
+    <tr>
+      <td>B4008021</td>
+      <td>Prim Soft 920 ml Roze</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008021" id="cb-B4008021" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>108</td>
+    </tr>
+    <tr>
+      <td>B4003160</td>
+      <td>Prim Soft 2 Lit Bardhe</td>
+      <td>45%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4003160" id="cb-B4003160" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>330.0</td>
+      <td>181</td>
+    </tr>
+    <tr>
+      <td>B4008010</td>
+      <td>Prim Soft 1840 ml Blu</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008010" id="cb-B4008010" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>175</td>
+    </tr>
+    <tr>
+      <td>B4008022</td>
+      <td>Prim Soft 920 ml Bardhe</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008022" id="cb-B4008022" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>187.0</td>
+      <td>107</td>
+    </tr>
+    <tr>
+      <td>B4008015</td>
+      <td>Prim Soft 1780 ml Roze</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008015" id="cb-B4008015" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>176</td>
+    </tr>
+    <tr>
+      <td>B4006013</td>
+      <td>Prim Luxurious Blu 1650 ml</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006013" id="cb-B4006013" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>308.0</td>
+      <td>181</td>
+    </tr>
+    <tr>
+      <td>B4006017</td>
+      <td>Prim Luxurious Blu 5 l</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006017" id="cb-B4006017" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>976.0</td>
+      <td>580</td>
+    </tr>
+    <tr>
+      <td>B4006016</td>
+      <td>Prim Luxurious GOLD 1650 ml</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006016" id="cb-B4006016" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>296.0</td>
+      <td>182</td>
+    </tr>
+    <tr>
+      <td>B4006015</td>
+      <td>Prim Luxurious Jeshil1650 ml</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006015" id="cb-B4006015" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>292.0</td>
+      <td>187</td>
+    </tr>
+    <tr>
+      <td>B4008013</td>
+      <td>Prim Soft 1840 Verdhe</td>
+      <td>34%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008013" id="cb-B4008013" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>269.0</td>
+      <td>177</td>
+    </tr>
+    <tr>
+      <td>B4006014</td>
+      <td>Prim Luxurious Roze1650 ml</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006014" id="cb-B4006014" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>282.0</td>
+      <td>192</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 SOFT2 <small>(2 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B4007010</td>
+      <td>DIP Soft 2 Lit Blu</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4007010" id="cb-B4007010" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>217.0</td>
+      <td>133</td>
+    </tr>
+    <tr>
+      <td>B4007011</td>
+      <td>DIP Soft 2 Lit Lejla</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4007011" id="cb-B4007011" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>206.0</td>
+      <td>131</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 XHEL <small>(5 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B3003040</td>
+      <td>Elan Gel 350 gr</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003040" id="cb-B3003040" onchange="updateCalculator(this)"></td>
+      <td>0.3</td>
+      <td>86.0</td>
+      <td>36</td>
+    </tr>
+    <tr>
+      <td>B3003050</td>
+      <td>Elan Gel 200 gr</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003050" id="cb-B3003050" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>50.0</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <td>B3003010</td>
+      <td>Elan Gel 250 gr</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003010" id="cb-B3003010" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>50.0</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>B3003020</td>
+      <td>Elan Gel 240 gr</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003020" id="cb-B3003020" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>40.0</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <td>B3003030</td>
+      <td>Svo Gel 250 gr</td>
+      <td>30%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003030" id="cb-B3003030" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>45.0</td>
+      <td>32</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details>
+        <details class="kat-details">
+            <summary><span class="kat-info">📂 ZBARDHUES <small>(7 artikuj)</small></span></summary>
+            <div class="table-wrap"><table class="dataframe sortable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B5001050</td>
+      <td>Deka Zbardhues 2.5 Lit Classic</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001050" id="cb-B5001050" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>212.0</td>
+      <td>108</td>
+    </tr>
+    <tr>
+      <td>B5001051</td>
+      <td>Deka Zbardhues 2.5 Lit Blue Sky</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001051" id="cb-B5001051" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>212.0</td>
+      <td>114</td>
+    </tr>
+    <tr>
+      <td>B5001080</td>
+      <td>DIP Zbardhues 2.5 Lit Classic</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001080" id="cb-B5001080" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>172.0</td>
+      <td>93</td>
+    </tr>
+    <tr>
+      <td>B5001020</td>
+      <td>Deka Zbardhues 1 Lit Classic</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001020" id="cb-B5001020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>85.0</td>
+      <td>47</td>
+    </tr>
+    <tr>
+      <td>B5001023</td>
+      <td>Deka Zbardhues 1 Lit Blue Sky</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001023" id="cb-B5001023" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>88.0</td>
+      <td>50</td>
+    </tr>
+    <tr>
+      <td>B5001060</td>
+      <td>Deka Zbardhues 5 Lit</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001060" id="cb-B5001060" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>343.0</td>
+      <td>208</td>
+    </tr>
+    <tr>
+      <td>B5001070</td>
+      <td>DIP Zbardhues 1 Lit Classic</td>
+      <td>28%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001070" id="cb-B5001070" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>57.0</td>
+      <td>41</td>
+    </tr>
+  </tbody>
+</table></div>
+        </details></div>
+            <div id="sortView" style="display:none; padding:15px;">
+                <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Kerko..." style="width:100%; padding:14px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+                <div class="table-wrap" style="background:white;"><table class="dataframe sortable" id="mainTable">
+  <thead>
+    <tr style="text-align: right;">
+      <th>KODI</th>
+      <th>ARTIKULLI</th>
+      <th>%</th>
+      <th>Zgjidh</th>
+      <th>SKU</th>
+      <th>SAD</th>
+      <th>KOT</th>
+      <th>KATEGORIA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>B5002010</td>
+      <td>Deka Antibakterial 750 ml</td>
+      <td>72%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5002010" id="cb-B5002010" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>270.0</td>
+      <td>74</td>
+      <td>ANTIBAKTERIAL</td>
+    </tr>
+    <tr>
+      <td>B7009010</td>
+      <td>Pastrues WC Deka 750ml Pine</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009010" id="cb-B7009010" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>174.0</td>
+      <td>85</td>
+      <td>DEZINFEKTUES</td>
+    </tr>
+    <tr>
+      <td>B7009011</td>
+      <td>Pastrues WC Deka 750ml Orchid</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009011" id="cb-B7009011" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>172.0</td>
+      <td>85</td>
+      <td>DEZINFEKTUES</td>
+    </tr>
+    <tr>
+      <td>B7009012</td>
+      <td>Pastrues WC Deka 750ml Ocean</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7009012" id="cb-B7009012" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>169.0</td>
+      <td>85</td>
+      <td>DEZINFEKTUES</td>
+    </tr>
+    <tr>
+      <td>B1009055</td>
+      <td>Deka Atomik Liquid Black 900ml</td>
+      <td>69%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009055" id="cb-B1009055" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>348.0</td>
+      <td>106</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009054</td>
+      <td>Deka Atomik Liquid Color 900ml</td>
+      <td>68%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009054" id="cb-B1009054" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>347.0</td>
+      <td>111</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009058</td>
+      <td>Deka Atomik Liquid Black 1300ml</td>
+      <td>67%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009058" id="cb-B1009058" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>448.0</td>
+      <td>148</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009056</td>
+      <td>Deka Atomik Liquid White 900ml</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009056" id="cb-B1009056" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>340.0</td>
+      <td>115</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009057</td>
+      <td>Deka Atomik Liquid Color 1300ml</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009057" id="cb-B1009057" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>450.0</td>
+      <td>154</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009046</td>
+      <td>Deka Atomik Liquid Black 1900ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009046" id="cb-B1009046" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>617.0</td>
+      <td>214</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009059</td>
+      <td>Deka Atomik Liquid White 1300ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009059" id="cb-B1009059" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>459.0</td>
+      <td>161</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009022</td>
+      <td>Deka Atomik Liquid Black 2700ml</td>
+      <td>65%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009022" id="cb-B1009022" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>823.0</td>
+      <td>291</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009045</td>
+      <td>Deka Atomik Liquid Color 1900ml</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009045" id="cb-B1009045" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>616.0</td>
+      <td>223</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009021</td>
+      <td>Deka Atomik Liquid Color 2700ml</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009021" id="cb-B1009021" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>818.0</td>
+      <td>304</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009047</td>
+      <td>Deka Atomik Liquid White 1900ml</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009047" id="cb-B1009047" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>628.0</td>
+      <td>233</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009043</td>
+      <td>Deka Atomic Liquid 1.8 lit Color</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009043" id="cb-B1009043" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>592.0</td>
+      <td>227</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009023</td>
+      <td>Deka Atomik Liquid White 2700ml</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009023" id="cb-B1009023" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>813.0</td>
+      <td>318</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009051</td>
+      <td>Deka Liquid 1.32 Lit White</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009051" id="cb-B1009051" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>420.0</td>
+      <td>171</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009052</td>
+      <td>Deka Liquid 1.32 Lit Black</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009052" id="cb-B1009052" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>356.0</td>
+      <td>158</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009041</td>
+      <td>Deka Liquid 1.8 Lit Black</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009041" id="cb-B1009041" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>452.0</td>
+      <td>208</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009050</td>
+      <td>Deka Liquid 1.32 Lit Color</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009050" id="cb-B1009050" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>351.0</td>
+      <td>163</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009040</td>
+      <td>Deka Liquid 1.8 Lit Color</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009040" id="cb-B1009040" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>453.0</td>
+      <td>218</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009042</td>
+      <td>Deka Liquid 1.8 Lit White</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009042" id="cb-B1009042" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>458.0</td>
+      <td>226</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009032</td>
+      <td>Deka Liquid 5 Lit White</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009032" id="cb-B1009032" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1075.0</td>
+      <td>636</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009030</td>
+      <td>Deka Liquid 5 Lit Color</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009030" id="cb-B1009030" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1094.0</td>
+      <td>660</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009031</td>
+      <td>Deka Liquid 5 Lit Black</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009031" id="cb-B1009031" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>1087.0</td>
+      <td>660</td>
+      <td>LIQUID1</td>
+    </tr>
+    <tr>
+      <td>B1009061</td>
+      <td>Dip Liquid 1.8 Lit Black</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009061" id="cb-B1009061" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>341.0</td>
+      <td>148</td>
+      <td>LIQUID2</td>
+    </tr>
+    <tr>
+      <td>B1009060</td>
+      <td>DIP Liquid 1.8 Lit Color</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009060" id="cb-B1009060" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>355.0</td>
+      <td>164</td>
+      <td>LIQUID2</td>
+    </tr>
+    <tr>
+      <td>B1009070</td>
+      <td>DIP Liquid 1.32 Lit Color</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1009070" id="cb-B1009070" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>253.0</td>
+      <td>128</td>
+      <td>LIQUID2</td>
+    </tr>
+    <tr>
+      <td>B4007010</td>
+      <td>DIP Soft 2 Lit Blu</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4007010" id="cb-B4007010" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>217.0</td>
+      <td>133</td>
+      <td>SOFT2</td>
+    </tr>
+    <tr>
+      <td>B4007011</td>
+      <td>DIP Soft 2 Lit Lejla</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4007011" id="cb-B4007011" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>206.0</td>
+      <td>131</td>
+      <td>SOFT2</td>
+    </tr>
+    <tr>
+      <td>B5001050</td>
+      <td>Deka Zbardhues 2.5 Lit Classic</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001050" id="cb-B5001050" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>212.0</td>
+      <td>108</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001051</td>
+      <td>Deka Zbardhues 2.5 Lit Blue Sky</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001051" id="cb-B5001051" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>212.0</td>
+      <td>114</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001080</td>
+      <td>DIP Zbardhues 2.5 Lit Classic</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001080" id="cb-B5001080" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>172.0</td>
+      <td>93</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001020</td>
+      <td>Deka Zbardhues 1 Lit Classic</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001020" id="cb-B5001020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>85.0</td>
+      <td>47</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001023</td>
+      <td>Deka Zbardhues 1 Lit Blue Sky</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001023" id="cb-B5001023" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>88.0</td>
+      <td>50</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001060</td>
+      <td>Deka Zbardhues 5 Lit</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001060" id="cb-B5001060" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>343.0</td>
+      <td>208</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B5001070</td>
+      <td>DIP Zbardhues 1 Lit Classic</td>
+      <td>28%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B5001070" id="cb-B5001070" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>57.0</td>
+      <td>41</td>
+      <td>ZBARDHUES</td>
+    </tr>
+    <tr>
+      <td>B6007020</td>
+      <td>Deka Gel Power 770 gr Limon</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007020" id="cb-B6007020" onchange="updateCalculator(this)"></td>
+      <td>0.8</td>
+      <td>193.0</td>
+      <td>84</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007013</td>
+      <td>Deka Gel Power 440 ml Jeshil</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007013" id="cb-B6007013" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>105.0</td>
+      <td>46</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007022</td>
+      <td>Deka Gel Power 880 ml Kuq</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007022" id="cb-B6007022" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>89</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007023</td>
+      <td>Deka Gel Power 880 ml Jeshil</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007023" id="cb-B6007023" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>198.0</td>
+      <td>88</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007021</td>
+      <td>Deka Gel Power 880 ml Blu</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007021" id="cb-B6007021" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>197.0</td>
+      <td>88</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007011</td>
+      <td>Deka Gel Power 440 ml Blu</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007011" id="cb-B6007011" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>104.0</td>
+      <td>48</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007012</td>
+      <td>Deka Gel Power 440 ml Kuq</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007012" id="cb-B6007012" onchange="updateCalculator(this)"></td>
+      <td>0.4</td>
+      <td>104.0</td>
+      <td>48</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007010</td>
+      <td>Deka Gel Power 480 gr Limon</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007010" id="cb-B6007010" onchange="updateCalculator(this)"></td>
+      <td>0.5</td>
+      <td>120.0</td>
+      <td>56</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007024</td>
+      <td>Deka Gel Power Blu 1200ml</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007024" id="cb-B6007024" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>262.0</td>
+      <td>127</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007025</td>
+      <td>Deka Gel Power Jeshil 1200ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007025" id="cb-B6007025" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>259.0</td>
+      <td>127</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007026</td>
+      <td>Deka Gel Power Kuq 1200 ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007026" id="cb-B6007026" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>259.0</td>
+      <td>127</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6003115</td>
+      <td>DIX Enesh 2.15 Lit Limon</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6003115" id="cb-B6003115" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>190.0</td>
+      <td>127</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6003101</td>
+      <td>DIX Enesh 5 Lit</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6003101" id="cb-B6003101" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>435.0</td>
+      <td>295</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B6007030</td>
+      <td>Deka Gel Power 5 Lit</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B6007030" id="cb-B6007030" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>891.0</td>
+      <td>607</td>
+      <td>ENESH</td>
+    </tr>
+    <tr>
+      <td>B7001010</td>
+      <td>DIX Cream 700 ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7001010" id="cb-B7001010" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>110.0</td>
+      <td>46</td>
+      <td>KREM</td>
+    </tr>
+    <tr>
+      <td>B1007012</td>
+      <td>DIP Pluhur 3 kg Color</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007012" id="cb-B1007012" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>355.0</td>
+      <td>207</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007011</td>
+      <td>DIP Pluhur 3 kg Jeshil</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007011" id="cb-B1007011" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>357.0</td>
+      <td>219</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007010</td>
+      <td>DIP Pluhur 3 kg Blu</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007010" id="cb-B1007010" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>354.0</td>
+      <td>224</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007031</td>
+      <td>Dip Pluhur 8.6 Kg Color</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007031" id="cb-B1007031" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>909.0</td>
+      <td>593</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007015</td>
+      <td>Dip Pluhur 6 Kg Color</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007015" id="cb-B1007015" onchange="updateCalculator(this)"></td>
+      <td>6.0</td>
+      <td>624.0</td>
+      <td>416</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007030</td>
+      <td>Dip Pluhur 8.6 Kg Blu</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007030" id="cb-B1007030" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>904.0</td>
+      <td>638</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007016</td>
+      <td>DIP Pluhur 6 kg Blu</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007016" id="cb-B1007016" onchange="updateCalculator(this)"></td>
+      <td>6.0</td>
+      <td>634.0</td>
+      <td>448</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007072</td>
+      <td>Elan Expert 1.5 kg Jeshil</td>
+      <td>13%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007072" id="cb-B1007072" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>124.0</td>
+      <td>108</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007071</td>
+      <td>Elan Expert 1.5 kg Blu</td>
+      <td>13%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007071" id="cb-B1007071" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>124.0</td>
+      <td>108</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B1007020</td>
+      <td>Dip Pluhur  Rifuxho (Lavatrice)</td>
+      <td>-8%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1007020" id="cb-B1007020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>100.0</td>
+      <td>108</td>
+      <td>MATIK2</td>
+    </tr>
+    <tr>
+      <td>B2001050</td>
+      <td>Elan Family 600 gr</td>
+      <td>68%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2001050" id="cb-B2001050" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>123.0</td>
+      <td>39</td>
+      <td>DORE</td>
+    </tr>
+    <tr>
+      <td>B2002040</td>
+      <td>Deka Aktiv plus 600 gr</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2002040" id="cb-B2002040" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>86.0</td>
+      <td>42</td>
+      <td>DORE</td>
+    </tr>
+    <tr>
+      <td>B2003010</td>
+      <td>Dip Multi Active 600 gr (dore)</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2003010" id="cb-B2003010" onchange="updateCalculator(this)"></td>
+      <td>0.6</td>
+      <td>71.0</td>
+      <td>42</td>
+      <td>DORE</td>
+    </tr>
+    <tr>
+      <td>B2003020</td>
+      <td>Dip Multiaktiv Rifuxho (Dore)</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B2003020" id="cb-B2003020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>90.0</td>
+      <td>58</td>
+      <td>DORE</td>
+    </tr>
+    <tr>
+      <td>B1008028</td>
+      <td>Deka No Comment 1.54 Kg Color</td>
+      <td>69%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008028" id="cb-B1008028" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>506.0</td>
+      <td>157</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008027</td>
+      <td>Deka No Comment 1.54 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008027" id="cb-B1008027" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>501.0</td>
+      <td>168</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008024</td>
+      <td>Deka No Comment 1.7 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008024" id="cb-B1008024" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>550.0</td>
+      <td>187</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008030</td>
+      <td>Deka NO Comment 2.31 Kg Jeshil</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008030" id="cb-B1008030" onchange="updateCalculator(this)"></td>
+      <td>2.3</td>
+      <td>742.0</td>
+      <td>253</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008092</td>
+      <td>Deka No Comment 1.75 kg Color (D)</td>
+      <td>66%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008092" id="cb-B1008092" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>528.0</td>
+      <td>180</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008019</td>
+      <td>Deka No Comment 2.6 Kg Color</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008019" id="cb-B1008019" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>747.0</td>
+      <td>265</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008026</td>
+      <td>Deka No Comment 1.54 Kg Blu</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008026" id="cb-B1008026" onchange="updateCalculator(this)"></td>
+      <td>1.5</td>
+      <td>503.0</td>
+      <td>179</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008025</td>
+      <td>Deka No Comment 1.7 Kg Color</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008025" id="cb-B1008025" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>484.0</td>
+      <td>175</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008029</td>
+      <td>Deka No Comment 2.31 Kg Blu</td>
+      <td>63%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008029" id="cb-B1008029" onchange="updateCalculator(this)"></td>
+      <td>2.3</td>
+      <td>738.0</td>
+      <td>270</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008017</td>
+      <td>Deka No Comment 2.6 Kg Blu</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008017" id="cb-B1008017" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>800.0</td>
+      <td>304</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008018</td>
+      <td>Deka No Comment 2.6 Kg Jeshil</td>
+      <td>62%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008018" id="cb-B1008018" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>740.0</td>
+      <td>283</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008091</td>
+      <td>Deka No Comment 1.75 Kg Blu (D)</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008091" id="cb-B1008091" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>524.0</td>
+      <td>206</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008051</td>
+      <td>Deka No Comment 700 gr Color</td>
+      <td>60%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008051" id="cb-B1008051" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>182.0</td>
+      <td>72</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008022</td>
+      <td>Deka No Comment 2 kg Violet</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008022" id="cb-B1008022" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>550.0</td>
+      <td>226</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008023</td>
+      <td>Deka No Comment 1.7 Kg Blu</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008023" id="cb-B1008023" onchange="updateCalculator(this)"></td>
+      <td>1.7</td>
+      <td>480.0</td>
+      <td>200</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008054</td>
+      <td>Deka No Comment 7.7kg Blu</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008054" id="cb-B1008054" onchange="updateCalculator(this)"></td>
+      <td>7.7</td>
+      <td>1860.0</td>
+      <td>790</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008020</td>
+      <td>Deka No Comment 2 kg Jeshil</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008020" id="cb-B1008020" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>513.0</td>
+      <td>218</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008014</td>
+      <td>Deka No Comment 3 kg Jeshil</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008014" id="cb-B1008014" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>750.0</td>
+      <td>323</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1003050</td>
+      <td>Deka Elegant Sensitive 3 kg (karton)</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003050" id="cb-B1003050" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>734.0</td>
+      <td>317</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008016</td>
+      <td>Deka No Comment 3 kg Violet</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008016" id="cb-B1008016" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>765.0</td>
+      <td>332</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008071</td>
+      <td>Deka Atomic Green 1.8 Kg</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008071" id="cb-B1008071" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>519.0</td>
+      <td>227</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008053</td>
+      <td>Deka No Comment 6.16 kg Blu</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008053" id="cb-B1008053" onchange="updateCalculator(this)"></td>
+      <td>6.2</td>
+      <td>1636.0</td>
+      <td>720</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008064</td>
+      <td>Deka No Comment 4 kg Jeshil</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008064" id="cb-B1008064" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>980.0</td>
+      <td>432</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008070</td>
+      <td>Deka Atomic Blu 1.8 Kg</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008070" id="cb-B1008070" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>523.0</td>
+      <td>231</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008052</td>
+      <td>Deka No Comment 700 Gr Blu</td>
+      <td>56%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008052" id="cb-B1008052" onchange="updateCalculator(this)"></td>
+      <td>0.7</td>
+      <td>185.0</td>
+      <td>82</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008074</td>
+      <td>Deka Atomic Green 2.6 Kg</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008074" id="cb-B1008074" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>725.0</td>
+      <td>327</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008078</td>
+      <td>Deka Atomic Green 3.6 Kg</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008078" id="cb-B1008078" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>978.0</td>
+      <td>453</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008015</td>
+      <td>Deka No Comment 3 kg Blu</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008015" id="cb-B1008015" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>738.0</td>
+      <td>347</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008073</td>
+      <td>Deka Atomic Blu 2.6 Kg</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008073" id="cb-B1008073" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>730.0</td>
+      <td>343</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008086</td>
+      <td>Detergent pluhur Super Clean White 1.61 ( 22 larje )</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008086" id="cb-B1008086" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>309.0</td>
+      <td>146</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008087</td>
+      <td>Detergent pluhur Super Clean Color 1.61kg (22 Larje)</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008087" id="cb-B1008087" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>290.0</td>
+      <td>139</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008077</td>
+      <td>Deka Atomic Blu 3.6 Kg</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008077" id="cb-B1008077" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>978.0</td>
+      <td>476</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008021</td>
+      <td>Deka No Comment 2 kg Blu</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008021" id="cb-B1008021" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>470.0</td>
+      <td>233</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008089</td>
+      <td>Super Clean Spar Color 3.22kg - 44 Larje</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008089" id="cb-B1008089" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>546.0</td>
+      <td>277</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008088</td>
+      <td>Super Clean Spar White 3.22kg - 44 Larje</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008088" id="cb-B1008088" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>548.0</td>
+      <td>291</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008085</td>
+      <td>Deka Infinit 50 Larje</td>
+      <td>45%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008085" id="cb-B1008085" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>770.0</td>
+      <td>421</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008084</td>
+      <td>Deka Infinit 75 Larje (3.9)</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008084" id="cb-B1008084" onchange="updateCalculator(this)"></td>
+      <td>3.9</td>
+      <td>1113.0</td>
+      <td>627</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008083</td>
+      <td>Deka Infinit 5.8 Kg</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008083" id="cb-B1008083" onchange="updateCalculator(this)"></td>
+      <td>5.8</td>
+      <td>1562.0</td>
+      <td>880</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008081</td>
+      <td>Deka Infinit 75 larje</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008081" id="cb-B1008081" onchange="updateCalculator(this)"></td>
+      <td>4.3</td>
+      <td>1115.0</td>
+      <td>650</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008080</td>
+      <td>Deka Infinit 110 larje</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008080" id="cb-B1008080" onchange="updateCalculator(this)"></td>
+      <td>6.3</td>
+      <td>1510.0</td>
+      <td>925</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008068</td>
+      <td>Deka Infinit 56 larje ()</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008068" id="cb-B1008068" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>690.0</td>
+      <td>522</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1003130</td>
+      <td>Deka No Comment Rifuxho</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003130" id="cb-B1003130" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>197.0</td>
+      <td>149</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1003140</td>
+      <td>Deka Infinit Rifuxho</td>
+      <td>19%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1003140" id="cb-B1003140" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>218.0</td>
+      <td>176</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B1008063</td>
+      <td>Deka No Comment 4 kg Blu</td>
+      <td>0%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B1008063" id="cb-B1008063" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>463</td>
+      <td>MATIK1</td>
+    </tr>
+    <tr>
+      <td>B7005093</td>
+      <td>Sprink  Pllakash 5Lit</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005093" id="cb-B7005093" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>539.0</td>
+      <td>253</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005314</td>
+      <td>Dix Pllakash 2.15 Lit Trendafil</td>
+      <td>48%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005314" id="cb-B7005314" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>190.0</td>
+      <td>98</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005212</td>
+      <td>DIP Pllakash 1 Lit Lejla (Touch of Lavender)</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005212" id="cb-B7005212" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>73</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005213</td>
+      <td>DIP Pllakash 1 Lit Roze (Think Pink)</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005213" id="cb-B7005213" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>75</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005211</td>
+      <td>DIP Pllakash 1 Lit Blu (Crystal Lagoon)</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005211" id="cb-B7005211" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>120.0</td>
+      <td>77</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005214</td>
+      <td>DIP Pllakash 1 Lit Kuqe (Elegant Flowers)</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005214" id="cb-B7005214" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>120.0</td>
+      <td>77</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B7005210</td>
+      <td>DIP Pllakash 1 Lit Jeshil (Blooming Lilies)</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005210" id="cb-B7005210" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>118.0</td>
+      <td>79</td>
+      <td>PLLAKA</td>
+    </tr>
+    <tr>
+      <td>B4001030</td>
+      <td>Prim Soft 1840 ml (Blu)</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4001030" id="cb-B4001030" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>330.0</td>
+      <td>157</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008011</td>
+      <td>Prim Soft 1840 ml Roze</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008011" id="cb-B4008011" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>381.0</td>
+      <td>187</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4001020</td>
+      <td>Prim Soft 1 Lit Blu</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4001020" id="cb-B4001020" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>190.0</td>
+      <td>94</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008023</td>
+      <td>Prim Soft 920 ml Verdhe</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008023" id="cb-B4008023" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>205.0</td>
+      <td>104</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008020</td>
+      <td>Prim Soft 920 ml Blu</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008020" id="cb-B4008020" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>102</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008012</td>
+      <td>Prim soft 1840 Bardhe</td>
+      <td>48%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008012" id="cb-B4008012" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>352.0</td>
+      <td>183</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008017</td>
+      <td>Prim Soft 1780 Verdhe</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008017" id="cb-B4008017" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>313.0</td>
+      <td>165</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008014</td>
+      <td>Prim Soft 1780 ml Blu</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008014" id="cb-B4008014" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>164</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008021</td>
+      <td>Prim Soft 920 ml Roze</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008021" id="cb-B4008021" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>201.0</td>
+      <td>108</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4003160</td>
+      <td>Prim Soft 2 Lit Bardhe</td>
+      <td>45%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4003160" id="cb-B4003160" onchange="updateCalculator(this)"></td>
+      <td>2.0</td>
+      <td>330.0</td>
+      <td>181</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008010</td>
+      <td>Prim Soft 1840 ml Blu</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008010" id="cb-B4008010" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>175</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008022</td>
+      <td>Prim Soft 920 ml Bardhe</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008022" id="cb-B4008022" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>187.0</td>
+      <td>107</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008015</td>
+      <td>Prim Soft 1780 ml Roze</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008015" id="cb-B4008015" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>308.0</td>
+      <td>176</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4006013</td>
+      <td>Prim Luxurious Blu 1650 ml</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006013" id="cb-B4006013" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>308.0</td>
+      <td>181</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4006017</td>
+      <td>Prim Luxurious Blu 5 l</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006017" id="cb-B4006017" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>976.0</td>
+      <td>580</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4006016</td>
+      <td>Prim Luxurious GOLD 1650 ml</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006016" id="cb-B4006016" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>296.0</td>
+      <td>182</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4006015</td>
+      <td>Prim Luxurious Jeshil1650 ml</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006015" id="cb-B4006015" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>292.0</td>
+      <td>187</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4008013</td>
+      <td>Prim Soft 1840 Verdhe</td>
+      <td>34%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4008013" id="cb-B4008013" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>269.0</td>
+      <td>177</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B4006014</td>
+      <td>Prim Luxurious Roze1650 ml</td>
+      <td>32%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B4006014" id="cb-B4006014" onchange="updateCalculator(this)"></td>
+      <td>1.6</td>
+      <td>282.0</td>
+      <td>192</td>
+      <td>SOFT1</td>
+    </tr>
+    <tr>
+      <td>B0001149</td>
+      <td>SET Deka Antibakterial 750 ml + Deka Gel Power 480 gr</td>
+      <td>64%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001149" id="cb-B0001149" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>363.0</td>
+      <td>131</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001243</td>
+      <td>Set Deka Atomic Liquid 40(L)+ Deka Atomic Liquid 20(L)+Wellnax WC 50g</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001243" id="cb-B0001243" onchange="updateCalculator(this)"></td>
+      <td>2.8</td>
+      <td>951.0</td>
+      <td>373</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001235</td>
+      <td>Set Deka Atomik Liquid (0.9Lx3)</td>
+      <td>61%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001235" id="cb-B0001235" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>845.0</td>
+      <td>332</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001241</td>
+      <td>Set Deka Atomic Liquid 40(L)+Deka Atomic Liquid 20(L)</td>
+      <td>60%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001241" id="cb-B0001241" onchange="updateCalculator(this)"></td>
+      <td>2.8</td>
+      <td>830.0</td>
+      <td>334</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001236</td>
+      <td>Set D.No Comment 1.54+D.Liquid 20Larje+P.Soft 920ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001236" id="cb-B0001236" onchange="updateCalculator(this)"></td>
+      <td>3.4</td>
+      <td>968.0</td>
+      <td>393</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001226</td>
+      <td>Set Deka No Comment 1.54 Kg + Deka Liquid 1.32 Lit + Prim Soft 920 ml</td>
+      <td>59%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001226" id="cb-B0001226" onchange="updateCalculator(this)"></td>
+      <td>3.8</td>
+      <td>1080.0</td>
+      <td>445</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001213</td>
+      <td>Set Deka No Comment 1.54 Kg+Deka Zbardhues 1 Lit+Deka Gel Power 440 ml</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001213" id="cb-B0001213" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>660.0</td>
+      <td>274</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001251</td>
+      <td>Set Deka Liquid Atomic 40 (Larje) + Wellnax WC</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001251" id="cb-B0001251" onchange="updateCalculator(this)"></td>
+      <td>1.9</td>
+      <td>630.0</td>
+      <td>262</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001237</td>
+      <td>Set 2 D. Atomic Liquid (29Larje)+D. Atomic Liquid (20 Larje)</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001237" id="cb-B0001237" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>990.0</td>
+      <td>420</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001252</td>
+      <td>Set Deka Liquid Atomic 60 (Larje) + Deka Liquid Atomic 20 (Larje)</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001252" id="cb-B0001252" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>985.0</td>
+      <td>419</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001168</td>
+      <td>Set Prim Soft 1840 ml + Deka liquid 1.32 Lit Black</td>
+      <td>57%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001168" id="cb-B0001168" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>770.0</td>
+      <td>333</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001286</td>
+      <td>Set Deka NoComment 33 larje + Prim Soft 40 Larje</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001286" id="cb-B0001286" onchange="updateCalculator(this)"></td>
+      <td>3.2</td>
+      <td>830.0</td>
+      <td>372</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001231</td>
+      <td>Set 2xDeka liquid 22 Larje+Prim Soft 1780 ml</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001231" id="cb-B0001231" onchange="updateCalculator(this)"></td>
+      <td>4.4</td>
+      <td>1081.0</td>
+      <td>489</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001249</td>
+      <td>Set Deka No Comment 7.7kg + Deka Liquid Atomic 20 Larje</td>
+      <td>54%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001249" id="cb-B0001249" onchange="updateCalculator(this)"></td>
+      <td>8.6</td>
+      <td>1975.0</td>
+      <td>905</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001261</td>
+      <td>Set Prim Luxurious 1.65L+Deka Liquid 900ml (20L)</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001261" id="cb-B0001261" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>620.0</td>
+      <td>291</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001204</td>
+      <td>Set Deka Atomik 1.8 Kg +Deka Gel Power 440 ml</td>
+      <td>53%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001204" id="cb-B0001204" onchange="updateCalculator(this)"></td>
+      <td>2.2</td>
+      <td>593.0</td>
+      <td>279</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001250</td>
+      <td>Set 2xDeka Gel Power 880ml + Sfungjer Enesh Macromax</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001250" id="cb-B0001250" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>381.0</td>
+      <td>181</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001248</td>
+      <td>Deka Gel Power 1200ml+Sfungjer Enesh Macromax</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001248" id="cb-B0001248" onchange="updateCalculator(this)"></td>
+      <td>1.2</td>
+      <td>315.0</td>
+      <td>150</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001253</td>
+      <td>Set Deka No Comment 6.16 kg + Wellnax WC</td>
+      <td>52%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001253" id="cb-B0001253" onchange="updateCalculator(this)"></td>
+      <td>6.2</td>
+      <td>1594.0</td>
+      <td>759</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001287</td>
+      <td>Set Deka No Comment 22 Larje + Prim Soft 40 Larje</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001287" id="cb-B0001287" onchange="updateCalculator(this)"></td>
+      <td>2.5</td>
+      <td>580.0</td>
+      <td>282</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001184</td>
+      <td>Set Deka Atomik 2.6 kg + Deka Gel Power 880 ml</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001184" id="cb-B0001184" onchange="updateCalculator(this)"></td>
+      <td>3.5</td>
+      <td>880.0</td>
+      <td>432</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001050</td>
+      <td>SET Deka No Comment 3 kg Blu + Deka Liquid 1.32 Lit Color</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001050" id="cb-B0001050" onchange="updateCalculator(this)"></td>
+      <td>4.3</td>
+      <td>1038.0</td>
+      <td>509</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001181</td>
+      <td>Set 2 Deka Liquid 1.32 Lit + Dip Liquid 1.8Lit</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001181" id="cb-B0001181" onchange="updateCalculator(this)"></td>
+      <td>4.4</td>
+      <td>950.0</td>
+      <td>473</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001233</td>
+      <td>Set Prim Luxurious 1.65+Deka Liquid 1.32</td>
+      <td>50%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001233" id="cb-B0001233" onchange="updateCalculator(this)"></td>
+      <td>3.0</td>
+      <td>684.0</td>
+      <td>343</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001285</td>
+      <td>Set Deka Gel Power 880ml 1+1</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001285" id="cb-B0001285" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>350.0</td>
+      <td>177</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001240</td>
+      <td>Set Deka No Comment 2.6kg +Prim Luxurios  75 Larje</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001240" id="cb-B0001240" onchange="updateCalculator(this)"></td>
+      <td>4.2</td>
+      <td>957.0</td>
+      <td>484</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001245</td>
+      <td>Set Deka No Comment 33(L) + Prim Luxururious (75L)</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001245" id="cb-B0001245" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>890.0</td>
+      <td>451</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001219</td>
+      <td>Set infinit 75+ P. Luxurious 1.65 + Gel power 880</td>
+      <td>49%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001219" id="cb-B0001219" onchange="updateCalculator(this)"></td>
+      <td>6.8</td>
+      <td>1805.0</td>
+      <td>919</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001210</td>
+      <td>Set Deka No Comment 1.7 Kg + Deka Gel Power 440 ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001210" id="cb-B0001210" onchange="updateCalculator(this)"></td>
+      <td>2.1</td>
+      <td>470.0</td>
+      <td>248</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001246</td>
+      <td>Set 2 Deka Gel Power 440ml+ Sfungjer Enesh Macromax</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001246" id="cb-B0001246" onchange="updateCalculator(this)"></td>
+      <td>0.9</td>
+      <td>188.0</td>
+      <td>99</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001247</td>
+      <td>Set 2X Deka Gel Power 880ml+Tel me Doreze Macromax</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001247" id="cb-B0001247" onchange="updateCalculator(this)"></td>
+      <td>1.8</td>
+      <td>410.0</td>
+      <td>217</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001225</td>
+      <td>Set Deka Atormic 22 Larje + Deka Liquid 1.32 + Deka Gel Power 880 Ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001225" id="cb-B0001225" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>910.0</td>
+      <td>482</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001234</td>
+      <td>Set Deka Infinit 50 Larje+P.Soft 920ml+D.Gel Power 440ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001234" id="cb-B0001234" onchange="updateCalculator(this)"></td>
+      <td>4.1</td>
+      <td>1070.0</td>
+      <td>571</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001220</td>
+      <td>Set Deka Infinit 3.9 kg + Prim Soft 1780 Ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml</td>
+      <td>47%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001220" id="cb-B0001220" onchange="updateCalculator(this)"></td>
+      <td>7.1</td>
+      <td>1656.0</td>
+      <td>885</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001239</td>
+      <td>Set D.Infinit 110 Larje+D.Atomic Liq Color 20 Larje+D.Atomic Liq Black 20 Larje</td>
+      <td>46%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001239" id="cb-B0001239" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>2050.0</td>
+      <td>1097</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001183</td>
+      <td>Set Deka Atomic 1.8 Kg +Deka Liquid 1.32 Lit</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001183" id="cb-B0001183" onchange="updateCalculator(this)"></td>
+      <td>3.1</td>
+      <td>707.0</td>
+      <td>394</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001257</td>
+      <td>Set Macromax Celefon 100m+Qese Pjekje+Leter Pjekje+Qese Frigoriferi+Qese Perimesh +Vaj Olim 1L</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001257" id="cb-B0001257" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>939.0</td>
+      <td>525</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001222</td>
+      <td>Set Deka Infinit 110 Larje+Deka liquid 22 Larje+Deka G.Power 440ml</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001222" id="cb-B0001222" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1940.0</td>
+      <td>1090</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001224</td>
+      <td>Set Deka Infinit 5.8 kg + Prim Soft 1780 ml +Deka Zbardhues 1 Lit + Deka Gel Power 440 Ml</td>
+      <td>44%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001224" id="cb-B0001224" onchange="updateCalculator(this)"></td>
+      <td>9.0</td>
+      <td>2026.0</td>
+      <td>1139</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001268</td>
+      <td>Set Prim Soft 1.78+Prim Soft 0.92Lit</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001268" id="cb-B0001268" onchange="updateCalculator(this)"></td>
+      <td>2.7</td>
+      <td>470.0</td>
+      <td>266</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001209</td>
+      <td>Set Deka Infinit 75 Larje +Prim Soft 1840 ml+Deka zbardhues 1 lit + Deka Gel Power 440 ml</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001209" id="cb-B0001209" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1623.0</td>
+      <td>920</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001230</td>
+      <td>Set Deka Infinit110 larje +Deka Liquid Black 1.32+ P.Soft 1780ml</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001230" id="cb-B0001230" onchange="updateCalculator(this)"></td>
+      <td>8.9</td>
+      <td>2100.0</td>
+      <td>1202</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001284</td>
+      <td>Set Deka Infinit 110 Larje +D.Atomic Liquid 20Larje +P.Soft 40Larje</td>
+      <td>43%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001284" id="cb-B0001284" onchange="updateCalculator(this)"></td>
+      <td>7.6</td>
+      <td>1902.0</td>
+      <td>1093</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001178</td>
+      <td>Set Deka Liquid 1.32 lt x 3</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001178" id="cb-B0001178" onchange="updateCalculator(this)"></td>
+      <td>4.0</td>
+      <td>855.0</td>
+      <td>492</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001262</td>
+      <td>Set Deka Gel Power 880ml + Deka Gel Power 440 ml</td>
+      <td>42%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001262" id="cb-B0001262" onchange="updateCalculator(this)"></td>
+      <td>1.3</td>
+      <td>235.0</td>
+      <td>136</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001207</td>
+      <td>Set Deka Infinit 110 Larje +Prim Soft 1840 ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml ()</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001207" id="cb-B0001207" onchange="updateCalculator(this)"></td>
+      <td>9.6</td>
+      <td>2041.0</td>
+      <td>1195</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001216</td>
+      <td>Set Deka Infinit 5.8 kg +Prim Soft 1840 ml + Deka Zbardhues 1 Lit + Deka Gel Power 440 ml</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001216" id="cb-B0001216" onchange="updateCalculator(this)"></td>
+      <td>9.1</td>
+      <td>1963.0</td>
+      <td>1150</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001221</td>
+      <td>Set Deka Infinit 75 larje+Prim soft 80 larje+Deka Zbardhues 1L</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001221" id="cb-B0001221" onchange="updateCalculator(this)"></td>
+      <td>6.7</td>
+      <td>1418.0</td>
+      <td>838</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001206</td>
+      <td>Set Deka Infinit 56 Larje + Prim Soft 920 Ml + Deka Gel Power 440 ml</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001206" id="cb-B0001206" onchange="updateCalculator(this)"></td>
+      <td>4.6</td>
+      <td>1058.0</td>
+      <td>636</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001167</td>
+      <td>Set Deka Infinit 75 larje + Prim soft 1840\r\n ml + Deka Zbardhues 1 L + Deka Gel Power 770 gr ()</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001167" id="cb-B0001167" onchange="updateCalculator(this)"></td>
+      <td>8.2</td>
+      <td>1647.0</td>
+      <td>994</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001169</td>
+      <td>Set Prim Soft 1840 ml + Prim Soft 1840 ml</td>
+      <td>40%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001169" id="cb-B0001169" onchange="updateCalculator(this)"></td>
+      <td>3.7</td>
+      <td>581.0</td>
+      <td>351</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001229</td>
+      <td>Set Deka Infrinit 50 Larje+ Deka Liquid 1.32 Lit +Deka Gel Power 880 ml</td>
+      <td>39%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001229" id="cb-B0001229" onchange="updateCalculator(this)"></td>
+      <td>4.9</td>
+      <td>1100.0</td>
+      <td>672</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001223</td>
+      <td>Set Prim Soft 80 Larje + Prim Soft 80 Larje</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001223" id="cb-B0001223" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>546.0</td>
+      <td>340</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001175</td>
+      <td>Set Deka Infinit 56 Larje + Deka Gel Power 770ml + Prim Soft 920ml</td>
+      <td>37%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001175" id="cb-B0001175" onchange="updateCalculator(this)"></td>
+      <td>5.2</td>
+      <td>1123.0</td>
+      <td>708</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001267</td>
+      <td>Set Prim Luxurious 1.65+Prim Luxurious 1.65</td>
+      <td>36%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001267" id="cb-B0001267" onchange="updateCalculator(this)"></td>
+      <td>3.3</td>
+      <td>580.0</td>
+      <td>372</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001180</td>
+      <td>Set Deka Infinit 110 Larje +Prim Soft 1840 ml +Deka Zbardhues 1 Lit + Deka Gel Power 770 ml ()</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001180" id="cb-B0001180" onchange="updateCalculator(this)"></td>
+      <td>10.4</td>
+      <td>2009.0</td>
+      <td>1299</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001244</td>
+      <td>Set Deka Infinit 50 Larje +Deka Atomic Liquid 0.9L (20Larje)</td>
+      <td>34%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001244" id="cb-B0001244" onchange="updateCalculator(this)"></td>
+      <td>3.6</td>
+      <td>805.0</td>
+      <td>532</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001096</td>
+      <td>SET Dip Pluhur 3 kg Blu + Dip Soft 2 Lit Blu</td>
+      <td>33%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001096" id="cb-B0001096" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>534.0</td>
+      <td>358</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001275</td>
+      <td>Set Pistake te Kripura 150gr+Miser me Spec 75 gr</td>
+      <td>31%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001275" id="cb-B0001275" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>487.0</td>
+      <td>337</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001272</td>
+      <td>Set Wellnax Wc 4*50gr+Wellnax Wc 4*50gr</td>
+      <td>29%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001272" id="cb-B0001272" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>360.0</td>
+      <td>256</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001270</td>
+      <td>Set Dip Pluhur 8.6kg+Dip Soft 2Lt</td>
+      <td>28%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001270" id="cb-B0001270" onchange="updateCalculator(this)"></td>
+      <td>10.6</td>
+      <td>1009.0</td>
+      <td>726</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001276</td>
+      <td>Set Pistake me Spec 100gr+Fruta te Thata Miks i Embel 150gr</td>
+      <td>24%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001276" id="cb-B0001276" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>481.0</td>
+      <td>367</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001269</td>
+      <td>Set Deka No Comment 6.16+Prim Soft 0.92Lt</td>
+      <td>23%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001269" id="cb-B0001269" onchange="updateCalculator(this)"></td>
+      <td>7.1</td>
+      <td>1074.0</td>
+      <td>822</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001273</td>
+      <td>Set Macromax Alumin 10m+Leter Pjekje 10cp</td>
+      <td>12%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001273" id="cb-B0001273" onchange="updateCalculator(this)"></td>
+      <td>0.0</td>
+      <td>170.0</td>
+      <td>150</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001254</td>
+      <td>Deka Atomic 1.8kg(21)+D.Zbardhues 1L+Dip Pllakash 1L+Peceta(5cp)+Kove me Shtupe Macromax</td>
+      <td>-3%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001254" id="cb-B0001254" onchange="updateCalculator(this)"></td>
+      <td>3.8</td>
+      <td>760.0</td>
+      <td>779</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B0001238</td>
+      <td>Set D.Infinit 75 Larje+D.Atomic Liq.Color 20 Larje+D.Atomic Liq.Black 20Larje</td>
+      <td>-7%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B0001238" id="cb-B0001238" onchange="updateCalculator(this)"></td>
+      <td>5.7</td>
+      <td>789.0</td>
+      <td>844</td>
+      <td>SET</td>
+    </tr>
+    <tr>
+      <td>B7008016</td>
+      <td>Dip Liquid Sapun Flowers Love 1000 ml</td>
+      <td>38%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008016" id="cb-B7008016" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>122.0</td>
+      <td>75</td>
+      <td>SAPUN</td>
+    </tr>
+    <tr>
+      <td>B7008014</td>
+      <td>Dip Liquid Sapun Argan Dream 1000 ml</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008014" id="cb-B7008014" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>121.0</td>
+      <td>79</td>
+      <td>SAPUN</td>
+    </tr>
+    <tr>
+      <td>B7008015</td>
+      <td>Dip Liquid Sapun Tea Tree Pure 1000ml</td>
+      <td>35%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008015" id="cb-B7008015" onchange="updateCalculator(this)"></td>
+      <td>1.0</td>
+      <td>119.0</td>
+      <td>78</td>
+      <td>SAPUN</td>
+    </tr>
+    <tr>
+      <td>B7008010</td>
+      <td>DIX Sapun 2.65 Lit Roze</td>
+      <td>30%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7008010" id="cb-B7008010" onchange="updateCalculator(this)"></td>
+      <td>2.6</td>
+      <td>267.0</td>
+      <td>187</td>
+      <td>SAPUN</td>
+    </tr>
+    <tr>
+      <td>B7005095</td>
+      <td>Deka Sapun Liquid 5 Lit</td>
+      <td>27%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B7005095" id="cb-B7005095" onchange="updateCalculator(this)"></td>
+      <td>5.0</td>
+      <td>384.0</td>
+      <td>281</td>
+      <td>SAPUN</td>
+    </tr>
+    <tr>
+      <td>B3003040</td>
+      <td>Elan Gel 350 gr</td>
+      <td>58%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003040" id="cb-B3003040" onchange="updateCalculator(this)"></td>
+      <td>0.3</td>
+      <td>86.0</td>
+      <td>36</td>
+      <td>XHEL</td>
+    </tr>
+    <tr>
+      <td>B3003050</td>
+      <td>Elan Gel 200 gr</td>
+      <td>55%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003050" id="cb-B3003050" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>50.0</td>
+      <td>23</td>
+      <td>XHEL</td>
+    </tr>
+    <tr>
+      <td>B3003010</td>
+      <td>Elan Gel 250 gr</td>
+      <td>51%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003010" id="cb-B3003010" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>50.0</td>
+      <td>24</td>
+      <td>XHEL</td>
+    </tr>
+    <tr>
+      <td>B3003020</td>
+      <td>Elan Gel 240 gr</td>
+      <td>41%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003020" id="cb-B3003020" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>40.0</td>
+      <td>24</td>
+      <td>XHEL</td>
+    </tr>
+    <tr>
+      <td>B3003030</td>
+      <td>Svo Gel 250 gr</td>
+      <td>30%</td>
+      <td><input type="checkbox" class="set-check" data-kodi="B3003030" id="cb-B3003030" onchange="updateCalculator(this)"></td>
+      <td>0.2</td>
+      <td>45.0</td>
+      <td>32</td>
+      <td>XHEL</td>
+    </tr>
+  </tbody>
+</table></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            © AX PRILL 2026
+        </div>
+
+        <div class="overlay" id="overlay" onclick="toggleCalculator()"></div>
+        
+        <div id="set-calculator-modal">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="color:#10b981; margin:0;">Konfigurimi i Setit</h3>
+                <div>
+                    <button class="qty-btn" onclick="undo()">↩</button>
+                    <button class="qty-btn" onclick="redo()">↪</button>
+                    <button onclick="toggleCalculator()" style="background:none; border:none; color:white; font-size:30px; cursor:pointer; margin-left:10px;">&times;</button>
+                </div>
+            </div>
+            
+            <div id="items-list">Zgjidhni artikujt...</div>
+
+            <div class="calc-grid">
+                <div class="calc-box"><label>KOT (LEKE)</label><input type="text" id="calc-kosto" readonly></div>
+                <div class="calc-box"><label>SKU (KG)</label><input type="text" id="calc-sku" readonly></div>
+                <div class="calc-box"><label>CMIMI (LEKE/KG)</label><input type="text" id="calc-lek-kg" readonly class="highlight-input"></div>
+            </div>
+            <div class="calc-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="calc-box"><label>% NDAJ SAD</label><input type="number" id="calc-margin" oninput="calculateByMargin()" step="0.1"></div>
+                <div class="calc-box"><label>SAD (LEKE)</label><input type="number" id="calc-sad" oninput="calculateBySAD()" step="0.1"></div>
+            </div>
+            
+            <input type="text" id="set-name" placeholder="Emri i setit..." style="width:100%; padding:14px; background:#1f2937; border:1px solid #4b5563; border-radius:6px; color:white; margin-bottom:10px; box-sizing:border-box;">
+            
+            <button class="btn-final" style="background:#059669;" onclick="saveSetToLibrary()">RUAJ NE LIBRARI</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-final" style="background:#22c55e; flex:1;" onclick="sendToWhatsApp()">WHATSAPP</button>
+                <button class="btn-final" style="background:#3b82f6; flex:1;" onclick="sendToEmail()">EMAIL</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-final" style="background:#4b5563; flex:1;" onclick="refreshUI()">RESET VLERAT</button>
+                <button class="btn-final" style="background:#ef4444; flex:1;" onclick="fullReset()">RESET TOTAL</button>
+            </div>
+        </div>
+
+        <script>
+            let selectedItems = [];
+            let history = [];
+            let redoStack = [];
+            let originalTotalSAD = 0;
+
+            function saveHistory() {
+                history.push(JSON.stringify(selectedItems));
+                if (history.length > 30) history.shift();
+                redoStack = [];
+            }
+            function undo() { if (history.length > 1) { redoStack.push(history.pop()); selectedItems = JSON.parse(history[history.length - 1]); refreshUI(false); syncCheckboxes(); } }
+            function redo() { if (redoStack.length > 0) { let state = redoStack.pop(); history.push(state); selectedItems = JSON.parse(state); refreshUI(false); syncCheckboxes(); } }
+
+            function toggleCalculator() {
+                let m = document.getElementById('set-calculator-modal'), o = document.getElementById('overlay');
+                let isOpen = m.style.display === 'block';
+                m.style.display = isOpen ? 'none' : 'block'; o.style.display = isOpen ? 'none' : 'block';
+                if(!isOpen) refreshUI(false);
+            }
+
+            function syncCheckboxes() {
+                document.querySelectorAll('.set-check').forEach(cb => {
+                    cb.checked = selectedItems.some(item => item.kodi == cb.getAttribute('data-kodi'));
+                });
+            }
+
+            function updateCalculator(checkbox) {
+                let row = checkbox.closest('tr');
+                let table = row.closest('table');
+                let headers = Array.from(table.querySelectorAll('th')).map(th => th.innerText.replace(' ↕','').trim());
+                let kodi = checkbox.getAttribute('data-kodi');
+                let name = row.cells[headers.indexOf('ARTIKULLI')].innerText.trim();
+                let sad = parseFloat(row.cells[headers.indexOf('SAD')].innerText) || 0;
+                let sku = parseFloat(row.cells[headers.indexOf('SKU') !== -1 ? headers.indexOf('SKU') : headers.indexOf('kg/sku')].innerText) || 0;
+                let percVal = parseFloat(row.cells[headers.indexOf('%')].innerText.replace('%','').replace(',','.')) || 0;
+                
+                if (checkbox.checked) { 
+                    if(!selectedItems.find(i => i.kodi === kodi)) {
+                        selectedItems.push({ kodi: kodi, name: name, kosto: sad/(1+(percVal/100)), sadOrig: sad, sku: sku, qty: 1 }); 
+                    }
+                } else { 
+                    selectedItems = selectedItems.filter(item => item.kodi !== kodi); 
+                }
+                refreshUI();
+            }
+
+            function refreshUI(save = true) {
+                if (save) saveHistory();
+                let tKosto = 0, tSadOrig = 0, tSku = 0, listHtml = "";
+                selectedItems.forEach((item, index) => {
+                    tKosto += (item.kosto * item.qty); tSadOrig += (item.sadOrig * item.qty); tSku += (item.sku * item.qty);
+                    listHtml += `<div class="item-row">
+                        <button class="btn-remove-item" onclick="removeItem(${index})">&times;</button>
+                        <div class="item-info"><b>${item.name} [${item.kodi}]</b></div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <button class="qty-btn" onclick="changeQty(${index},-1)">-</button>
+                            <b style="width:20px; text-align:center;">${item.qty}</b>
+                            <button class="qty-btn" onclick="changeQty(${index},1)">+</button>
+                        </div>
+                    </div>`;
+                });
+                
+                originalTotalSAD = tSadOrig;
+                document.getElementById('selected-count').innerText = selectedItems.length;
+                document.getElementById('calc-kosto').value = tKosto.toFixed(1);
+                document.getElementById('calc-sad').value = tSadOrig.toFixed(1);
+                document.getElementById('calc-sku').value = tSku.toFixed(1);
+                
+                if (tKosto > 0) document.getElementById('calc-margin').value = (((tSadOrig/tKosto)-1)*100).toFixed(1);
+                if (tSku > 0) document.getElementById('calc-lek-kg').value = (tSadOrig / tSku).toFixed(1);
+                
+                document.getElementById('items-list').innerHTML = listHtml || "Asnje artikull...";
+            }
+
+            function calculateByMargin() { 
+                let k = parseFloat(document.getElementById('calc-kosto').value)||0, 
+                    m = parseFloat(document.getElementById('calc-margin').value)||0,
+                    sku = parseFloat(document.getElementById('calc-sku').value)||1;
+                if(k>0) {
+                    let sad = k*(1+(m/100));
+                    document.getElementById('calc-sad').value = sad.toFixed(1);
+                    document.getElementById('calc-lek-kg').value = (sad / sku).toFixed(1);
+                }
+            }
+            
+            function calculateBySAD() { 
+                let k = parseFloat(document.getElementById('calc-kosto').value)||0, 
+                    s = parseFloat(document.getElementById('calc-sad').value)||0,
+                    sku = parseFloat(document.getElementById('calc-sku').value)||1;
+                if(k>0) {
+                    document.getElementById('calc-margin').value = (((s/k)-1)*100).toFixed(1);
+                    document.getElementById('calc-lek-kg').value = (s / sku).toFixed(1);
+                }
+            }
+
+            function generateMessage() {
+                let emriSetit = document.getElementById('set-name').value || "Set i Ri";
+                let sadOrigjinal = originalTotalSAD.toFixed(1);
+                let sadOferte = parseFloat(document.getElementById('calc-sad').value) || 0;
+                let kostoTotale = parseFloat(document.getElementById('calc-kosto').value) || 1;
+                let pesha = document.getElementById('calc-sku').value;
+                let lekeKg = document.getElementById('calc-lek-kg').value;
+                
+                let mOrig = (((sadOrigjinal/kostoTotale)-1)*100).toFixed(1);
+                let mOferte = (((sadOferte/kostoTotale)-1)*100).toFixed(1);
+
+                let line = "_________________________________\n";
+                let msg = `Emri: ${emriSetit}\n${line}\nPerberja:\n`;
+                
+                selectedItems.forEach(i => {
+                    msg += `- ${i.qty} x ${i.kodi} ${i.name}\n`;
+                });
+
+                msg += `${line}\nCmimi Origjinal: ${sadOrigjinal} LEKE (${mOrig}%)\n`;
+                msg += `Cmimi Oferte: ${sadOferte} LEKE (${mOferte}%)\n`;
+                msg += `${line}\nPesha Setit: ${pesha} kg\nCmimi/kg: ${lekeKg} LEKE\n${line}`;
+                
+                
+                return { subject: `Kompozim Seti: ${emriSetit}`, body: msg };
+            }
+
+            function sendToWhatsApp() {
+                let data = generateMessage();
+                let cleanBody = data.body.replace(/\\n/g, '\n');
+                let encodedMsg = encodeURIComponent(cleanBody);
+                window.open(`https://wa.me/?text=${encodedMsg}`, '_blank');
+            }
+
+            function sendToEmail() {
+                let data = generateMessage();
+                let cleanBody = data.body.replace(/\\n/g, '\r\n');
+                let mailtoLink = `mailto:?subject=${encodeURIComponent(data.subject)}&body=${encodeURIComponent(cleanBody)}`;
+                window.location.href = mailtoLink;
+            }
+
+            function saveSetToLibrary() {
+                let name = document.getElementById('set-name').value; if (!name || selectedItems.length === 0) return alert("Emri!");
+                let setObj = { id: Date.now(), name: name, items_text: selectedItems.map(i => `${i.qty}x ${i.name}`).join(", "), sad: document.getElementById('calc-sad').value, kosto: document.getElementById('calc-kosto').value, margin: document.getElementById('calc-margin').value, raw: JSON.parse(JSON.stringify(selectedItems)) };
+                let lib = JSON.parse(localStorage.getItem('mySets2026') || "[]"); lib.push(setObj); localStorage.setItem('mySets2026', JSON.stringify(lib));
+                displayLibrary(); alert("U ruajt!");
+            }
+
+            function displayLibrary() {
+                let lib = JSON.parse(localStorage.getItem('mySets2026') || "[]"), html = "";
+                lib.forEach(s => {
+                    html += `<tr onclick="loadSet(${s.id})" style="cursor:pointer;"><td><b>${s.name}</b></td><td style="font-size:10px">${s.items_text}</td><td>${s.kosto}</td><td>${s.sad}</td><td>${s.margin}%</td><td><button onclick="event.stopPropagation(); deleteSet(${s.id})" style="color:red; border:none; background:none;">X</button></td></tr>`;
+                });
+                document.getElementById('libraryBody').innerHTML = html;
+            }
+
+            function loadSet(id) { 
+                let lib = JSON.parse(localStorage.getItem('mySets2026') || "[]");
+                let set = lib.find(s => s.id == id);
+                if(set) {
+                    selectedItems = JSON.parse(JSON.stringify(set.raw));
+                    refreshUI(true);
+                    syncCheckboxes();
+                    document.getElementById('set-name').value = set.name;
+                    document.getElementById('calc-sad').value = set.sad;
+                    document.getElementById('calc-margin').value = set.margin;
+                    toggleCalculator();
+                }
+            }
+
+            function changeQty(index, delta) { selectedItems[index].qty = Math.max(1, selectedItems[index].qty + delta); refreshUI(); }
+            function removeItem(index) { selectedItems.splice(index, 1); refreshUI(); syncCheckboxes(); }
+            function deleteSet(id) { let lib = JSON.parse(localStorage.getItem('mySets2026')).filter(s => s.id != id); localStorage.setItem('mySets2026', JSON.stringify(lib)); displayLibrary(); }
+            function fullReset() { selectedItems = []; document.querySelectorAll('.set-check').forEach(cb => cb.checked = false); refreshUI(); toggleCalculator(); }
+            function toggleLibrary() { let s = document.getElementById('librarySection'); s.style.display = (s.style.display==='none')?'block':'none'; displayLibrary(); }
+            function toggleView() { let gV = document.getElementById('groupView'), sV = document.getElementById('sortView'), btn = document.getElementById('toggleViewBtn'); if (gV.style.display === 'none') { gV.style.display = 'block'; sV.style.display = 'none'; btn.innerText = "LISTA E ARTIKUJVE"; } else { gV.style.display = 'none'; sV.style.display = 'block'; btn.innerText = "KTHEHU TE GRUPET"; } }
+            function searchTable() { let f = document.getElementById("searchInput").value.toUpperCase(), tr = document.getElementById("mainTable").getElementsByTagName("tr"); for (let i = 1; i < tr.length; i++) tr[i].style.display = (tr[i].textContent.toUpperCase().indexOf(f) > -1) ? "" : "none"; }
+            
+            window.onload = function() { displayLibrary(); document.querySelectorAll('.sortable').forEach(t => new Tablesort(t)); };
+        </script>
+    </body>
+    </html>
+    
